@@ -896,6 +896,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${version.surefire.plugin}</version>
           <configuration>
+            <trimStackTrace>false</trimStackTrace>
             <systemPropertyVariables>
               <!-- To avoid conflicts on CI server - PAR-192 -->
               <!-- There is an incompatibility with Byteman - used in social -->
