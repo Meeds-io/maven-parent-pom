@@ -148,6 +148,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.jaxb2.plugin>2.2</version.jaxb2.plugin>
     <!-- PAR-362: weaves .class files with AspectJ aspects available in classpath (binary weaving) -->
     <version.jcabi.plugin>0.14</version.jcabi.plugin>
+    <version.jcabi.aspectj.dependencies.plugin>1.9.1</version.jcabi.aspectj.dependencies.plugin>
     <version.jdepend.plugin>2.0</version.jdepend.plugin>
     <!-- PAR-222 : jdocbook 2.3.6+ has a perf issue. See MPJDOCBOOK-84 -->
     <version.jdocbook.plugin>2.3.5</version.jdocbook.plugin>
@@ -694,6 +695,23 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </configuration>
             </execution>
           </executions>
+          <dependencies>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjtools</artifactId>
+                <version>${version.jcabi.aspectj.dependencies.plugin}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${version.jcabi.aspectj.dependencies.plugin}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${version.jcabi.aspectj.dependencies.plugin}</version>
+            </dependency>
+        </dependencies>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
