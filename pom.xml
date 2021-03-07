@@ -275,6 +275,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <sonar.jacoco.reportPath>${jacoco.outputDir}/jacoco.exec</sonar.jacoco.reportPath>
     <!-- Tells Sonar where the Jacoco coverage result file is located for Integration Tests -->
     <sonar.jacoco.itReportPath>${jacoco.outputDir}/jacoco-it.exec</sonar.jacoco.itReportPath>
+    <!-- Tells Sonar where the Jacoco coverage result file is located for merged Integration and Unit Tests coverage -->
+    <sonar.jacoco.reportPaths>${jacoco.outputDir}/jacoco-all.exec</sonar.jacoco.reportPaths>
     <!-- The listener used to compute coverage per test -->
     <!-- JUnit : org.sonar.java.jacoco.JUnitListener -->
     <!-- TestNG : org.sonar.java.jacoco.TestNGListener -->
@@ -1501,6 +1503,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       </limits>
                     </rule>
                   </rules>
+                  <dataFile>${sonar.jacoco.reportPaths}</dataFile>
                 </configuration>
               </execution>
               <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run. -->
@@ -1529,6 +1532,35 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                   <dataFile>${sonar.jacoco.itReportPath}</dataFile>
                   <!-- Sets the output directory for the code coverage report. -->
                   <outputDirectory>${project.reporting.outputDirectory}/test-coverage-it</outputDirectory>
+                </configuration>
+              </execution>
+              <execution>
+                <id>merge-all-test-reports</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>merge</goal>
+                </goals>
+                <configuration>
+                  <fileSets>
+                    <fileSet>
+                      <directory>${jacoco.outputDir}</directory>
+                      <includes>
+                        <include>*.exec</include>
+                      </includes>
+                    </fileSet>
+                  </fileSets>
+                  <destFile>${sonar.jacoco.reportPaths}</destFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>create-merged-tests-coverage-report</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <dataFile>${sonar.jacoco.reportPaths}</dataFile>
+                  <outputDirectory>${project.reporting.outputDirectory}/test-coverage-all</outputDirectory>
                 </configuration>
               </execution>
             </executions>
