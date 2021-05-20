@@ -1087,6 +1087,20 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </execution>
         </executions>
       </plugin>
+      <!-- Maven Plugin for generating contracts JAVA sources -->
+      <plugin>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-maven-plugin</artifactId>
+        <version>${org.lombok.plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>delombok</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <reporting>
@@ -1183,20 +1197,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </reports>
           </reportSet>
         </reportSets>
-      </plugin>
-      <!-- Maven Plugin for generating contracts JAVA sources -->
-      <plugin>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok-maven-plugin</artifactId>
-        <version>${org.lombok.plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>delombok</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </reporting>
