@@ -116,7 +116,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.checkstyle.plugin>2.17</version.checkstyle.plugin>
     <!-- PAR-398: Workaround to use it with Java 8 (To remove when 2.8 is released) -->
     <version.clirr.plugin>2.8-eXo01</version.clirr.plugin>
-    <version.compiler.plugin>3.5.1</version.compiler.plugin>
+    <version.compiler.plugin>3.8.1</version.compiler.plugin>
     <version.copy.plugin>0.2.5</version.copy.plugin>
     <version.dependency.plugin>2.10</version.dependency.plugin>
     <version.deploy.plugin>2.8.2</version.deploy.plugin>
@@ -140,7 +140,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.idea.plugin>2.2.1</version.idea.plugin>
     <version.install.plugin>2.5.2</version.install.plugin>
     <version.invoker.plugin>2.0.0</version.invoker.plugin>
-    <version.jacoco.plugin>0.8.2</version.jacoco.plugin>
+    <version.jacoco.plugin>0.8.7</version.jacoco.plugin>
     <version.jar.plugin>2.6</version.jar.plugin>
     <version.javacc.plugin>2.6</version.javacc.plugin>
     <version.javadoc.plugin>2.10.3</version.javadoc.plugin>
@@ -148,7 +148,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.jaxb2.plugin>2.2</version.jaxb2.plugin>
     <!-- PAR-362: weaves .class files with AspectJ aspects available in classpath (binary weaving) -->
     <version.jcabi.plugin>0.14</version.jcabi.plugin>
-    <version.jcabi.aspectj.dependencies.plugin>1.9.1</version.jcabi.aspectj.dependencies.plugin>
+    <version.jcabi.aspectj.dependencies.plugin>1.9.6</version.jcabi.aspectj.dependencies.plugin>
     <version.jdepend.plugin>2.0</version.jdepend.plugin>
     <!-- PAR-222 : jdocbook 2.3.6+ has a perf issue. See MPJDOCBOOK-84 -->
     <version.jdocbook.plugin>2.3.5</version.jdocbook.plugin>
@@ -210,8 +210,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- maven-clirr-plugin -->
     <textOutputFile>${project.build.directory}/clirr-report.txt</textOutputFile>
     <!-- maven-compiler-plugin -->
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.optimize>true</maven.compiler.optimize>
@@ -221,10 +221,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <maven.min.version>3.1.1</maven.min.version>
     <jdk.min.version>${maven.compiler.source}</jdk.min.version>
     <exo.release.enforce.requirePluginVersions.banSnapshots>true</exo.release.enforce.requirePluginVersions.banSnapshots>
-    <!-- To configure animal-sniffer to check API compat -->
-    <animal-sniffer.signature.groupId>org.codehaus.mojo.signature</animal-sniffer.signature.groupId>
-    <animal-sniffer.signature.artifactId>java18</animal-sniffer.signature.artifactId>
-    <animal-sniffer.signature.version>1.0</animal-sniffer.signature.version>
     <!-- Extra enforcer rules -->
     <extra-enforcer-rules.version>1.0-beta-4</extra-enforcer-rules.version>
     <!-- gmaven-plugin -->
@@ -780,6 +776,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <groupId>org.jibx</groupId>
           <artifactId>maven-jibx-plugin</artifactId>
           <version>${version.jibx.plugin}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.bcel</groupId>
+              <artifactId>bcel</artifactId>
+              <version>6.3</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>com.lazerycode.jmeter</groupId>
@@ -1285,6 +1288,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <release>${maven.compiler.source}</release>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
               <execution>
@@ -1300,26 +1310,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       <banRelease>true</banRelease>
                       <banSnapshots>${exo.release.enforce.requirePluginVersions.banSnapshots}</banSnapshots>
                     </requirePluginVersions>
-                  </rules>
-                </configuration>
-              </execution>
-              <execution>
-                <id>check-java-compat</id>
-                <!-- PAR-361: Rollback, because CheckSignatureRule always failed for 3rd party libraries
-                <phase>process-classes</phase>
-                -->
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <checkSignatureRule implementation="org.codehaus.mojo.animal_sniffer.enforcer.CheckSignatureRule">
-                      <signature>
-                        <groupId>${animal-sniffer.signature.groupId}</groupId>
-                        <artifactId>${animal-sniffer.signature.artifactId}</artifactId>
-                        <version>${animal-sniffer.signature.version}</version>
-                      </signature>
-                    </checkSignatureRule>
                   </rules>
                 </configuration>
               </execution>
