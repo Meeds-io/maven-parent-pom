@@ -126,7 +126,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.eclipse.plugin>2.10</version.eclipse.plugin>
     <version.ear.plugin>2.10.1</version.ear.plugin>
     <version.ejb.plugin>2.5.1</version.ejb.plugin>
-    <version.enforcer.plugin>1.4.1</version.enforcer.plugin>
+    <version.enforcer.plugin>3.0.0-M3</version.enforcer.plugin>
     <version.exec.plugin>1.4.0</version.exec.plugin>
     <version.exobuild.plugin>1.2.2</version.exobuild.plugin>
     <version.exopc.plugin>1.0.5</version.exopc.plugin>
@@ -222,7 +222,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <jdk.min.version>${maven.compiler.source}</jdk.min.version>
     <exo.release.enforce.requirePluginVersions.banSnapshots>true</exo.release.enforce.requirePluginVersions.banSnapshots>
     <!-- Extra enforcer rules -->
-    <extra-enforcer-rules.version>1.0-beta-4</extra-enforcer-rules.version>
+    <extra-enforcer-rules.version>1.1</extra-enforcer-rules.version>
     <!-- gmaven-plugin -->
     <gmaven-plugin.providerSelection>2.0</gmaven-plugin.providerSelection>
     <!-- maven-gpg-plugin -->
