@@ -140,7 +140,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.idea.plugin>2.2.1</version.idea.plugin>
     <version.install.plugin>2.5.2</version.install.plugin>
     <version.invoker.plugin>2.0.0</version.invoker.plugin>
-    <version.jacoco.plugin>0.7.6.201602180812</version.jacoco.plugin>
+    <version.jacoco.plugin>0.8.2</version.jacoco.plugin>
     <version.jar.plugin>2.6</version.jar.plugin>
     <version.javacc.plugin>2.6</version.javacc.plugin>
     <version.javadoc.plugin>2.10.3</version.javadoc.plugin>
