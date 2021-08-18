@@ -278,6 +278,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <sonar.jacoco.itReportPath>${jacoco.outputDir}/jacoco-it.exec</sonar.jacoco.itReportPath>
     <!-- Tells Sonar where the Jacoco coverage result file is located for merged Integration and Unit Tests coverage -->
     <sonar.jacoco.reportPaths>${jacoco.outputDir}/jacoco-all.exec</sonar.jacoco.reportPaths>
+    <!-- Tells Sonar where the Jacoco coverage xml result file are located -->
+    <sonar.coverage.jacoco.xmlReportPaths>target/site/test-coverage-ut/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <!-- The listener used to compute coverage per test -->
     <!-- JUnit : org.sonar.java.jacoco.JUnitListener -->
     <!-- TestNG : org.sonar.java.jacoco.TestNGListener -->
