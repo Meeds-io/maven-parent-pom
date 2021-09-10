@@ -199,6 +199,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- *************** -->
     <version.animal-sniffer.enforcer-rule>1.18</version.animal-sniffer.enforcer-rule>
     <version.wagon>2.7</version.wagon>
+    <version.kr.motd.os>1.6.2</version.kr.motd.os>
     <!-- PAR-193 : performances boost workaround -->
     <version.plexus-utils>3.0.18</version.plexus-utils>
     <!-- PAR-155 : Produce project sources package distribution -->
@@ -313,6 +314,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-http</artifactId>
         <version>${version.wagon}</version>
+      </extension>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>${version.kr.motd.os}</version>
       </extension>
     </extensions>
     <pluginManagement>
