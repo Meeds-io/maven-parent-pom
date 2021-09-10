@@ -168,6 +168,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.plexus.plugin>1.3.8</version.plexus.plugin>
     <version.plugin.plugin>3.4</version.plugin.plugin>
     <version.pmd.plugin>3.6</version.pmd.plugin>
+    <version.protobuf.plugin>0.6.1</version.protobuf.plugin>
+    <io.grpc.version>1.40.1</io.grpc.version>
+    <protoc.version>3.17.2</protoc.version>
     <version.rar.plugin>2.4</version.rar.plugin>
     <version.release.plugin>2.5.3</version.release.plugin>
     <version.remote-resources.plugin.version>1.5</version.remote-resources.plugin.version>
@@ -865,6 +868,24 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
           <version>${version.pmd.plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.xolstice.maven.plugins</groupId>
+          <artifactId>protobuf-maven-plugin</artifactId>
+          <version>${version.protobuf.plugin}</version>
+          <configuration>
+            <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
+            <pluginId>grpc-java</pluginId>
+            <pluginArtifact>io.grpc:protoc-gen-grpc-java:${io.grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>compile</goal>
+                <goal>compile-custom</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
