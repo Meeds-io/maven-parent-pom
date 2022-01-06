@@ -75,7 +75,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </site>
   </distributionManagement>
   <properties>
-    <argLine></argLine>
+    <argLine />
     <exo.product.name>${project.name}</exo.product.name>
     <!-- **************************************** -->
     <!-- Jira Settings                            -->
@@ -708,21 +708,21 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </executions>
           <dependencies>
             <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjtools</artifactId>
-                <version>${version.jcabi.aspectj.dependencies.plugin}</version>
+              <groupId>org.aspectj</groupId>
+              <artifactId>aspectjtools</artifactId>
+              <version>${version.jcabi.aspectj.dependencies.plugin}</version>
             </dependency>
             <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjrt</artifactId>
-                <version>${version.jcabi.aspectj.dependencies.plugin}</version>
+              <groupId>org.aspectj</groupId>
+              <artifactId>aspectjrt</artifactId>
+              <version>${version.jcabi.aspectj.dependencies.plugin}</version>
             </dependency>
             <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>${version.jcabi.aspectj.dependencies.plugin}</version>
+              <groupId>org.aspectj</groupId>
+              <artifactId>aspectjweaver</artifactId>
+              <version>${version.jcabi.aspectj.dependencies.plugin}</version>
             </dependency>
-        </dependencies>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>com.github.eirslett</groupId>
@@ -1529,7 +1529,21 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <version>${version.jacoco.plugin}</version>
             <executions>
               <execution>
+                <id>instrument-classes</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>instrument</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>restore-instrumented-classes</id>
+                <goals>
+                  <goal>restore-instrumented-classes</goal>
+                </goals>
+              </execution>
+              <execution>
                 <id>prepare-ut-agent</id>
+                <phase>compile</phase>
                 <goals>
                   <goal>prepare-agent</goal>
                 </goals>
@@ -1540,6 +1554,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </execution>
               <execution>
                 <id>prepare-it-agent</id>
+                <phase>compile</phase>
                 <goals>
                   <goal>prepare-agent-integration</goal>
                 </goals>
@@ -1550,6 +1565,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </execution>
               <execution>
                 <id>check-coverage</id>
+                <phase>package</phase>
                 <goals>
                   <goal>check</goal>
                 </goals>
@@ -1572,7 +1588,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run. -->
               <execution>
                 <id>post-unit-test</id>
-                <phase>test</phase>
+                <phase>prepare-package</phase>
                 <goals>
                   <goal>report</goal>
                 </goals>
@@ -1586,7 +1602,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <!-- Ensures that the code coverage report for integration tests after integration tests have been run. -->
               <execution>
                 <id>post-integration-test</id>
-                <phase>post-integration-test</phase>
+                <phase>prepare-package</phase>
                 <goals>
                   <goal>report</goal>
                 </goals>
@@ -1599,7 +1615,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </execution>
               <execution>
                 <id>merge-all-test-reports</id>
-                <phase>post-integration-test</phase>
+                <phase>prepare-package</phase>
                 <goals>
                   <goal>merge</goal>
                 </goals>
@@ -1617,7 +1633,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </execution>
               <execution>
                 <id>create-merged-tests-coverage-report</id>
-                <phase>post-integration-test</phase>
+                <phase>package</phase>
                 <goals>
                   <goal>report</goal>
                 </goals>
