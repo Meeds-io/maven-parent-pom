@@ -189,6 +189,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.owasp.dependency-check-maven.plugin>3.1.2</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.0.0</org.lombok.plugin.version>
     <com.github.eirslett.frontend.version>1.11.3</com.github.eirslett.frontend.version>
+    <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
     <node.version>v16.0.0</node.version>
     <npm.version>7.11.2</npm.version>
     <!-- *************** -->
@@ -763,6 +764,25 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <configuration>
                 <arguments>run build</arguments>
               </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>io.openapitools.swagger</groupId>
+          <artifactId>swagger-maven-plugin</artifactId>
+          <version>${io.openapitools.swagger.version}</version>
+          <configuration>
+            <outputDirectory>${basedir}/target/</outputDirectory>
+            <outputFilename>swagger</outputFilename>
+            <outputFormats>JSON,YAML</outputFormats>
+            <prettyPrint>true</prettyPrint>
+            <attachSwaggerArtifact>true</attachSwaggerArtifact>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>generate</goal>
+              </goals>
             </execution>
           </executions>
         </plugin>
