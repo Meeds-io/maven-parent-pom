@@ -189,6 +189,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.owasp.dependency-check-maven.plugin>3.1.2</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.0.0</org.lombok.plugin.version>
     <com.github.eirslett.frontend.version>1.11.3</com.github.eirslett.frontend.version>
+    <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
     <node.version>v16.0.0</node.version>
     <npm.version>7.11.2</npm.version>
     <!-- *************** -->
@@ -293,6 +294,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <sonar.projectKey>${project.groupId}</sonar.projectKey>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+
+    <rest.api.doc.contact.name>eXo Developers</rest.api.doc.contact.name>
+    <rest.api.doc.contact.email>developers@exoplatfom.org</rest.api.doc.contact.email>
+    <rest.api.doc.contact.url>https://developer.exoplatform.org</rest.api.doc.contact.url>
   </properties>
   <build>
     <extensions>
@@ -762,6 +767,34 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <configuration>
                 <arguments>run build</arguments>
               </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>io.openapitools.swagger</groupId>
+          <artifactId>swagger-maven-plugin</artifactId>
+          <version>${io.openapitools.swagger.version}</version>
+          <configuration>
+            <outputDirectory>${basedir}/target/</outputDirectory>
+            <outputFilename>docs-swagger</outputFilename>
+            <outputFormats>JSON,YAML</outputFormats>
+            <prettyPrint>true</prettyPrint>
+            <attachSwaggerArtifact>true</attachSwaggerArtifact>
+            <swaggerConfig>
+              <info>
+                <contact>
+                  <email>${rest.api.doc.contact.email}</email>
+                  <name>${rest.api.doc.contact.name}</name>
+                  <url>${rest.api.doc.contact.url}</url>
+                </contact>
+              </info>
+            </swaggerConfig>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>generate</goal>
+              </goals>
             </execution>
           </executions>
         </plugin>
