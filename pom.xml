@@ -293,6 +293,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <sonar.projectKey>${project.groupId}</sonar.projectKey>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+    <sonar.coverage.exclusions>*.vue,*.js</sonar.coverage.exclusions>
   </properties>
   <build>
     <extensions>
