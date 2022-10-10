@@ -188,7 +188,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.yuicompressor.plugin>0.7.1</version.yuicompressor.plugin>
     <version.owasp.dependency-check-maven.plugin>3.1.2</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.0.0</org.lombok.plugin.version>
-    <com.github.eirslett.frontend.version>1.11.3</com.github.eirslett.frontend.version>
+    <com.github.eirslett.frontend.version>1.12.1</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
     <node.version>v16.0.0</node.version>
     <npm.version>7.11.2</npm.version>
