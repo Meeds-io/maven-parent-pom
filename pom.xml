@@ -188,6 +188,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.yuicompressor.plugin>0.7.1</version.yuicompressor.plugin>
     <version.owasp.dependency-check-maven.plugin>3.1.2</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.0.0</org.lombok.plugin.version>
+    <version.maven-jaxb2-plugin>0.14.0</version.maven-jaxb2-plugin>
+    <version.jaxb-runtime>2.3.3</version.jaxb-runtime>
     <com.github.eirslett.frontend.version>1.12.1</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
     <node.version>v16.0.0</node.version>
@@ -1134,6 +1136,19 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>${version.maven-jaxb2-plugin}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${version.jaxb-runtime}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
