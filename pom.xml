@@ -182,7 +182,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <version.tomcat7.plugin>2.2</version.tomcat7.plugin>
     <version.versions.plugin>2.2</version.versions.plugin>
-    <version.war.plugin>2.6</version.war.plugin>
+    <version.war.plugin>3.3.2</version.war.plugin>
     <version.wikbook.plugin>0.9.45</version.wikbook.plugin>
     <version.xml.plugin>1.0</version.xml.plugin>
     <version.yuicompressor.plugin>0.7.1</version.yuicompressor.plugin>
