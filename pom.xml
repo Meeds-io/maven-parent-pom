@@ -178,7 +178,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.sonar-maven-report.plugin>0.1</version.sonar-maven-report.plugin>
     <version.sortpom.plugin>2.3.1</version.sortpom.plugin>
     <version.source.plugin>3.0.0</version.source.plugin>
-    <version.surefire.plugin>2.19.1</version.surefire.plugin>
+    <version.surefire.plugin>2.22.2</version.surefire.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <version.tomcat7.plugin>2.2</version.tomcat7.plugin>
     <version.versions.plugin>2.2</version.versions.plugin>
