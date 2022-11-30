@@ -804,7 +804,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <dependency>
               <groupId>org.apache.bcel</groupId>
               <artifactId>bcel</artifactId>
-              <version>6.3</version>
+              <version>6.6.0</version>
             </dependency>
           </dependencies>
         </plugin>
