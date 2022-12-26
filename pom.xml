@@ -50,7 +50,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <connection>scm:git:git://github.com/exoplatform/maven-parent-pom.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/maven-parent-pom.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://fisheye.exoplatform.org/browse/maven-parent-pom</url>
   </scm>
   <issueManagement>
     <system>jira</system>
@@ -174,7 +173,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.resources.plugin>3.2.0</version.resources.plugin>
     <version.selenium.plugin>2.3</version.selenium.plugin>
     <version.shade.plugin>3.4.1</version.shade.plugin>
-    <version.site.plugin>3.4</version.site.plugin>
+    <version.site.plugin>3.12.1</version.site.plugin>
     <version.sonar-maven-report.plugin>0.1</version.sonar-maven-report.plugin>
     <version.sortpom.plugin>2.3.1</version.sortpom.plugin>
     <version.source.plugin>3.0.0</version.source.plugin>
@@ -186,7 +185,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.wikbook.plugin>0.9.45</version.wikbook.plugin>
     <version.xml.plugin>1.0</version.xml.plugin>
     <version.yuicompressor.plugin>0.7.1</version.yuicompressor.plugin>
-    <version.owasp.dependency-check-maven.plugin>3.1.2</version.owasp.dependency-check-maven.plugin>
+    <version.owasp.dependency-check-maven.plugin>7.4.1</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.20.0</org.lombok.plugin.version>
     <com.github.eirslett.frontend.version>1.12.1</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
@@ -945,6 +944,18 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>${version.site.plugin}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-webdav-jackrabbit</artifactId>
+              <version>3.5.3</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.maven.doxia</groupId>
+              <artifactId>doxia-module-xhtml</artifactId>
+              <version>1.11.1</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1185,28 +1196,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <includes>
             <include>**/exoplatform/**</include>
           </includes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-changes-plugin</artifactId>
-        <version>${version.changes.plugin}</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>jira-report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-        <configuration>
-          <useJql>true</useJql>
-          <maxEntries>1000</maxEntries>
-          <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
-          <onlyCurrentVersion>true</onlyCurrentVersion>
-          <statusIds>Resolved,Closed,Done</statusIds>
-          <resolutionIds>Fixed,Won't Fix,Duplicate,Incomplete,Cannot Reproduce,Workaround,Normal Behavior,Done</resolutionIds>
-          <columnNames>Priority,Type,Key,Summary,Component,Status,Resolution,Fix Version</columnNames>
-          <sortColumnNames>Fix Version DESC,Type DESC,Priority DESC</sortColumnNames>
         </configuration>
       </plugin>
       <plugin>
