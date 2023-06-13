@@ -220,7 +220,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- maven-dependency-plugin -->
     <repoUrl>${exo.public.repo.url}</repoUrl>
     <!-- maven-enforcer-plugin -->
-    <maven.min.version>3.1.1</maven.min.version>
+    <maven.min.version>3.6.0</maven.min.version>
     <jdk.min.version>${maven.compiler.source}</jdk.min.version>
     <exo.release.enforce.requirePluginVersions.banSnapshots>true</exo.release.enforce.requirePluginVersions.banSnapshots>
     <!-- Extra enforcer rules -->
