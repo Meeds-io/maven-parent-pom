@@ -43,9 +43,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <name>eXo Platform SAS</name>
     </developer>
   </developers>
-  <prerequisites>
-    <maven>${maven.min.version}</maven>
-  </prerequisites>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/maven-parent-pom.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/maven-parent-pom.git</developerConnection>
