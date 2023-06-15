@@ -43,9 +43,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       <name>eXo Platform SAS</name>
     </developer>
   </developers>
-  <prerequisites>
-    <maven>${maven.min.version}</maven>
-  </prerequisites>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/maven-parent-pom.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/maven-parent-pom.git</developerConnection>
@@ -127,7 +124,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.eclipse.plugin>2.10</version.eclipse.plugin>
     <version.ear.plugin>2.10.1</version.ear.plugin>
     <version.ejb.plugin>2.5.1</version.ejb.plugin>
-    <version.enforcer.plugin>3.1.0</version.enforcer.plugin>
+    <version.enforcer.plugin>3.3.0</version.enforcer.plugin>
     <version.exec.plugin>1.4.0</version.exec.plugin>
     <version.exobuild.plugin>1.2.2</version.exobuild.plugin>
     <version.exopc.plugin>1.0.5</version.exopc.plugin>
@@ -135,7 +132,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.findbugs.plugin>3.0.3</version.findbugs.plugin>
     <version.gmaven.plugin>1.5</version.gmaven.plugin>
     <version.gmavenplus.plugin>1.5</version.gmavenplus.plugin>
-    <version.gpg.plugin>1.6</version.gpg.plugin>
+    <version.gpg.plugin>3.1.0</version.gpg.plugin>
     <!-- Must be kept in sync with maven-depmgt-pom GWT version -->
     <version.gwt.plugin>2.6.1</version.gwt.plugin>
     <version.idea.plugin>2.2.1</version.idea.plugin>
@@ -169,7 +166,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.plugin.plugin>3.4</version.plugin.plugin>
     <version.pmd.plugin>3.6</version.pmd.plugin>
     <version.rar.plugin>2.4</version.rar.plugin>
-    <version.release.plugin>2.5.3</version.release.plugin>
+    <version.release.plugin>3.0.1</version.release.plugin>
     <version.remote-resources.plugin.version>1.5</version.remote-resources.plugin.version>
     <version.resources.plugin>3.2.0</version.resources.plugin>
     <version.selenium.plugin>2.3</version.selenium.plugin>
@@ -220,7 +217,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- maven-dependency-plugin -->
     <repoUrl>${exo.public.repo.url}</repoUrl>
     <!-- maven-enforcer-plugin -->
-    <maven.min.version>3.1.1</maven.min.version>
+    <maven.min.version>3.6.0</maven.min.version>
     <jdk.min.version>${maven.compiler.source}</jdk.min.version>
     <exo.release.enforce.requirePluginVersions.banSnapshots>true</exo.release.enforce.requirePluginVersions.banSnapshots>
     <!-- Extra enforcer rules -->
@@ -1399,12 +1396,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <goals>
                   <goal>sign</goal>
                 </goals>
-                <configuration>
-                  <gpgArguments>
-                    <arg>--pinentry-mode</arg>
-                    <arg>loopback</arg>
-                  </gpgArguments>
-                </configuration>
               </execution>
             </executions>
           </plugin>
