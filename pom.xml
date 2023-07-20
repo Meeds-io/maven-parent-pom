@@ -103,57 +103,31 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- Plugins versions -->
     <!-- **************** -->
     <version.antrun.plugin>1.8</version.antrun.plugin>
-    <version.archetype.plugin>2.4</version.archetype.plugin>
-    <version.aspectj.plugin>1.8</version.aspectj.plugin>
     <version.assembly.plugin>2.6</version.assembly.plugin>
     <version.buildhelper.plugin>1.10</version.buildhelper.plugin>
     <version.buildnumber.plugin>1.4</version.buildnumber.plugin>
-    <version.cargo.plugin>1.4.10</version.cargo.plugin>
     <version.clean.plugin>3.0.0</version.clean.plugin>
     <version.changes.plugin>2.11</version.changes.plugin>
-    <version.checkstyle.plugin>2.17</version.checkstyle.plugin>
-    <!-- PAR-398: Workaround to use it with Java 8 (To remove when 2.8 is released) -->
-    <version.clirr.plugin>2.8-eXo01</version.clirr.plugin>
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
-    <version.copy.plugin>0.2.5</version.copy.plugin>
     <version.dependency.plugin>3.3.0</version.dependency.plugin>
     <version.deploy.plugin>2.8.2</version.deploy.plugin>
-    <version.docck.plugin>1.1</version.docck.plugin>
-    <version.docbkx.plugin>2.0.16</version.docbkx.plugin>
-    <version.duplicate-finder.plugin>1.0.9</version.duplicate-finder.plugin>
     <version.eclipse.plugin>2.10</version.eclipse.plugin>
-    <version.ear.plugin>2.10.1</version.ear.plugin>
-    <version.ejb.plugin>2.5.1</version.ejb.plugin>
     <version.enforcer.plugin>3.3.0</version.enforcer.plugin>
-    <version.exec.plugin>1.4.0</version.exec.plugin>
-    <version.exobuild.plugin>1.2.2</version.exobuild.plugin>
-    <version.exopc.plugin>1.0.5</version.exopc.plugin>
     <version.failsafe.plugin>${version.surefire.plugin}</version.failsafe.plugin>
-    <version.findbugs.plugin>3.0.3</version.findbugs.plugin>
     <version.gmaven.plugin>1.5</version.gmaven.plugin>
     <version.gmavenplus.plugin>1.5</version.gmavenplus.plugin>
     <version.gpg.plugin>3.1.0</version.gpg.plugin>
-    <!-- Must be kept in sync with maven-depmgt-pom GWT version -->
-    <version.gwt.plugin>2.6.1</version.gwt.plugin>
     <version.idea.plugin>2.2.1</version.idea.plugin>
     <version.install.plugin>2.5.2</version.install.plugin>
-    <version.invoker.plugin>2.0.0</version.invoker.plugin>
     <version.jacoco.plugin>0.8.7</version.jacoco.plugin>
     <version.jar.plugin>2.6</version.jar.plugin>
-    <version.javacc.plugin>2.6</version.javacc.plugin>
     <version.javadoc.plugin>3.4.1</version.javadoc.plugin>
-    <version.javancss.plugin>2.1</version.javancss.plugin>
-    <version.jaxb2.plugin>2.2</version.jaxb2.plugin>
     <!-- PAR-362: weaves .class files with AspectJ aspects available in classpath (binary weaving) -->
     <version.jcabi.plugin>0.14</version.jcabi.plugin>
     <version.jcabi.aspectj.dependencies.plugin>1.9.9.1</version.jcabi.aspectj.dependencies.plugin>
-    <version.jdepend.plugin>2.0</version.jdepend.plugin>
     <!-- PAR-222 : jdocbook 2.3.6+ has a perf issue. See MPJDOCBOOK-84 -->
     <version.jdocbook.plugin>2.3.5</version.jdocbook.plugin>
     <version.jibx.plugin>1.3.1</version.jibx.plugin>
-    <version.jmeter.plugin>1.10.1</version.jmeter.plugin>
-    <version.jodconverter.plugin>2.2.1</version.jodconverter.plugin>
-    <version.jstools.plugin>0.7</version.jstools.plugin>
     <version.jxr.plugin>2.5</version.jxr.plugin>
     <version.lesscss.plugin>1.7.0.1.1</version.lesscss.plugin>
     <version.license.plugin>1.8</version.license.plugin>
@@ -162,27 +136,20 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- PAR-398: Workaround to use clirr plugin with Java 8 (To remove when clirr 2.8 is released) -->
     <version.project-info-reports-shade.plugin>1.2</version.project-info-reports-shade.plugin>
     <version.project-info-reports-bcel-findbugs.plugin>6.0</version.project-info-reports-bcel-findbugs.plugin>
-    <version.plexus.plugin>1.3.8</version.plexus.plugin>
     <version.plugin.plugin>3.4</version.plugin.plugin>
-    <version.pmd.plugin>3.6</version.pmd.plugin>
-    <version.rar.plugin>2.4</version.rar.plugin>
     <version.release.plugin>3.0.1</version.release.plugin>
     <version.remote-resources.plugin.version>1.5</version.remote-resources.plugin.version>
     <version.resources.plugin>3.2.0</version.resources.plugin>
-    <version.selenium.plugin>2.3</version.selenium.plugin>
     <version.shade.plugin>3.4.1</version.shade.plugin>
     <version.site.plugin>3.4</version.site.plugin>
     <version.sonar-maven-report.plugin>0.1</version.sonar-maven-report.plugin>
-    <version.sortpom.plugin>2.3.1</version.sortpom.plugin>
     <version.source.plugin>3.0.0</version.source.plugin>
     <version.surefire.plugin>2.22.2</version.surefire.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <version.tomcat7.plugin>2.2</version.tomcat7.plugin>
     <version.versions.plugin>2.2</version.versions.plugin>
     <version.war.plugin>3.3.2</version.war.plugin>
-    <version.wikbook.plugin>0.9.45</version.wikbook.plugin>
     <version.xml.plugin>1.0</version.xml.plugin>
-    <version.yuicompressor.plugin>0.7.1</version.yuicompressor.plugin>
     <version.owasp.dependency-check-maven.plugin>3.1.2</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.20.0</org.lombok.plugin.version>
     <com.github.eirslett.frontend.version>1.12.1</com.github.eirslett.frontend.version>
@@ -193,7 +160,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- Others versions -->
     <!-- *************** -->
     <version.animal-sniffer.enforcer-rule>1.18</version.animal-sniffer.enforcer-rule>
-    <version.wagon>2.7</version.wagon>
     <!-- PAR-193 : performances boost workaround -->
     <version.plexus-utils>3.0.18</version.plexus-utils>
     <!-- PAR-155 : Produce project sources package distribution -->
@@ -239,8 +205,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <maven.javadoc.jar.skip>${maven.javadoc.skip}</maven.javadoc.jar.skip>
     <!-- too slow : http://jira.codehaus.org/browse/MJAVADOC-268 -->
     <quiet>true</quiet>
-    <!-- maven-pmd-plugin -->
-    <targetJdk>${maven.compiler.target}</targetJdk>
     <!-- These properties are automatically computed during the build -->
     <parsedVersion.majorVersion>N/A</parsedVersion.majorVersion>
     <!-- maven-war-plugin -->
@@ -294,23 +258,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <sonar.coverage.exclusions>**/*.vue,**/*.js</sonar.coverage.exclusions>
   </properties>
   <build>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-webdav-jackrabbit</artifactId>
-        <version>${version.wagon}</version>
-      </extension>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-file</artifactId>
-        <version>${version.wagon}</version>
-      </extension>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http</artifactId>
-        <version>${version.wagon}</version>
-      </extension>
-    </extensions>
     <pluginManagement>
       <!-- All plugins ordered by shortname (antrun, assembly ...) -->
       <plugins>
@@ -318,16 +265,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>${version.antrun.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-archetype-plugin</artifactId>
-          <version>${version.archetype.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>aspectj-maven-plugin</artifactId>
-          <version>${version.aspectj.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -351,19 +288,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <version>${version.buildnumber.plugin}</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.cargo</groupId>
-          <artifactId>cargo-maven2-plugin</artifactId>
-          <version>${version.cargo.plugin}</version>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-changes-plugin</artifactId>
           <version>${version.changes.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>${version.checkstyle.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -371,24 +298,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <version>${version.clean.plugin}</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>clirr-maven-plugin</artifactId>
-          <version>${version.clirr.plugin}</version>
-          <configuration>
-            <includes>
-              <include>**/exoplatform/**</include>
-            </includes>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${version.compiler.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>com.github.goldin</groupId>
-          <artifactId>copy-maven-plugin</artifactId>
-          <version>${version.copy.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -405,74 +317,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <version>${version.deploy.plugin}</version>
         </plugin>
         <plugin>
-          <groupId>com.agilejava.docbkx</groupId>
-          <artifactId>docbkx-maven-plugin</artifactId>
-          <version>${version.docbkx.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-docck-plugin</artifactId>
-          <version>${version.docck.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>com.ning.maven.plugins</groupId>
-          <artifactId>maven-duplicate-finder-plugin</artifactId>
-          <version>${version.duplicate-finder.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-ear-plugin</artifactId>
-          <version>${version.ear.plugin}</version>
-          <configuration>
-            <archive>
-              <manifest>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              </manifest>
-              <manifestEntries>
-                <Date>${maven.build.timestamp}</Date>
-                <Implementation-URL>${project.url}</Implementation-URL>
-                <SCM-URL>${project.scm.connection}</SCM-URL>
-                <SCM-Revision>${buildNumber}</SCM-Revision>
-                <Specification-Title>${exo.product.name}</Specification-Title>
-                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
-                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
-                <Implementation-Title>${project.name}</Implementation-Title>
-                <Implementation-Version>${project.version}</Implementation-Version>
-                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-              </manifestEntries>
-            </archive>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>${version.eclipse.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-ejb-plugin</artifactId>
-          <version>${version.ejb.plugin}</version>
-          <configuration>
-            <archive>
-              <manifest>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              </manifest>
-              <manifestEntries>
-                <Date>${maven.build.timestamp}</Date>
-                <Implementation-URL>${project.url}</Implementation-URL>
-                <SCM-URL>${project.scm.connection}</SCM-URL>
-                <SCM-Revision>${buildNumber}</SCM-Revision>
-                <Specification-Title>${exo.product.name}</Specification-Title>
-                <Specification-Version>${parsedVersion.majorVersion}.0</Specification-Version>
-                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
-                <Implementation-Title>${project.name}</Implementation-Title>
-                <Implementation-Version>${project.version}</Implementation-Version>
-                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
-              </manifestEntries>
-            </archive>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -492,21 +339,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </dependencies>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>${version.exec.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.exoplatform.maven.plugins</groupId>
-          <artifactId>maven-exobuild-plugin</artifactId>
-          <version>${version.exobuild.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.exoplatform.maven.plugins</groupId>
-          <artifactId>maven-exopc-plugin</artifactId>
-          <version>${version.exopc.plugin}</version>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${version.failsafe.plugin}</version>
@@ -517,11 +349,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <!-- <java.io.tmpdir>${project.build.directory}</java.io.tmpdir> -->
             </systemPropertyVariables>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <version>${version.findbugs.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.gmaven</groupId>
@@ -549,15 +376,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>gwt-maven-plugin</artifactId>
-          <version>${version.gwt.plugin}</version>
-          <configuration>
-            <!-- PAR-218 : Can't disable these unneeded artifacts, so compile them outside of the target WAR -->
-            <deploy>${project.build.directory}/gwt-deploy</deploy>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-idea-plugin</artifactId>
           <version>${version.idea.plugin}</version>
@@ -566,11 +384,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
           <version>${version.install.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-invoker-plugin</artifactId>
-          <version>${version.invoker.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
@@ -601,11 +414,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </manifestEntries>
             </archive>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>javacc-maven-plugin</artifactId>
-          <version>${version.javacc.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -668,16 +476,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </tag>
             </tags>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>javancss-maven-plugin</artifactId>
-          <version>${version.javancss.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>jaxb2-maven-plugin</artifactId>
-          <version>${version.jaxb2.plugin}</version>
         </plugin>
         <plugin>
           <groupId>com.jcabi</groupId>
@@ -784,11 +582,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </executions>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>jdepend-maven-plugin</artifactId>
-          <version>${version.jdepend.plugin}</version>
-        </plugin>
-        <plugin>
           <groupId>org.jboss.maven.plugins</groupId>
           <artifactId>maven-jdocbook-plugin</artifactId>
           <version>${version.jdocbook.plugin}</version>
@@ -804,21 +597,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <version>6.3</version>
             </dependency>
           </dependencies>
-        </plugin>
-        <plugin>
-          <groupId>com.lazerycode.jmeter</groupId>
-          <artifactId>jmeter-maven-plugin</artifactId>
-          <version>${version.jmeter.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>com.artofsolving</groupId>
-          <artifactId>jodconverter-maven-plugin</artifactId>
-          <version>${version.jodconverter.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>gr.abiss.mvn.plugins</groupId>
-          <artifactId>maven-jstools-plugin</artifactId>
-          <version>${version.jstools.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -870,24 +648,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-maven-plugin</artifactId>
-          <version>${version.plexus.plugin}</version>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
           <version>${version.plugin.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-pmd-plugin</artifactId>
-          <version>${version.pmd.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-rar-plugin</artifactId>
-          <version>${version.rar.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -932,11 +695,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <version>${version.resources.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>selenium-maven-plugin</artifactId>
-          <version>${version.selenium.plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1052,38 +810,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.wikbook</groupId>
-          <artifactId>wikbook.maven</artifactId>
-          <version>${version.wikbook.plugin}</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.slf4j</groupId>
-              <artifactId>slf4j-simple</artifactId>
-              <version>1.5.8</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-        <plugin>
-          <groupId>org.wikbook</groupId>
-          <artifactId>wikbook.html2pdf</artifactId>
-          <version>${version.wikbook.plugin}</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.slf4j</groupId>
-              <artifactId>slf4j-simple</artifactId>
-              <version>1.5.8</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>xml-maven-plugin</artifactId>
           <version>${version.xml.plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>net.sf.alchim</groupId>
-          <artifactId>yuicompressor-maven-plugin</artifactId>
-          <version>${version.yuicompressor.plugin}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1173,16 +902,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
         <version>${version.versions.plugin}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>clirr-maven-plugin</artifactId>
-        <version>${version.clirr.plugin}</version>
-        <configuration>
-          <includes>
-            <include>**/exoplatform/**</include>
-          </includes>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1687,24 +1406,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
       </reporting>
     </profile>
     <!--
-     Checks backward compatibility is maintained
-     -->
-    <profile>
-      <id>chk-backward-comp</id>
-      <build>
-        <defaultGoal>clirr:check</defaultGoal>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>clirr-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-      <properties>
-        <failOnError>false</failOnError>
-      </properties>
-    </profile>
-    <!--
      Reformat POMs
      -->
     <profile>
@@ -1802,32 +1503,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </execution>
             </executions>
             <inherited>false</inherited>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>fix-javadocs</id>
-      <build>
-        <defaultGoal>javadoc:fix</defaultGoal>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>clirr-maven-plugin</artifactId>
-                <version>${version.clirr.plugin}</version>
-              </dependency>
-            </dependencies>
-            <configuration>
-              <defaultAuthor>${project.organization.name}</defaultAuthor>
-              <defaultVersion />
-              <fixTags>author,since,param,return,throws,link</fixTags>
-              <level>private</level>
-              <force>true</force>
-            </configuration>
           </plugin>
         </plugins>
       </build>
