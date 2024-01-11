@@ -149,7 +149,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.versions.plugin>2.16.2</version.versions.plugin>
     <version.war.plugin>3.3.2</version.war.plugin>
     <version.xml.plugin>1.0</version.xml.plugin>
-    <version.owasp.dependency-check-maven.plugin>3.1.2</version.owasp.dependency-check-maven.plugin>
+    <version.owasp.dependency-check-maven.plugin>3.2.0</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.20.0</org.lombok.plugin.version>
     <com.github.eirslett.frontend.version>1.15.0</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
