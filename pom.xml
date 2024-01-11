@@ -103,12 +103,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- Plugins versions -->
     <!-- **************** -->
     <version.antrun.plugin>1.8</version.antrun.plugin>
-    <version.assembly.plugin>2.6</version.assembly.plugin>
+    <version.assembly.plugin>3.6.0</version.assembly.plugin>
     <version.buildhelper.plugin>1.10</version.buildhelper.plugin>
     <version.buildnumber.plugin>1.4</version.buildnumber.plugin>
-    <version.clean.plugin>3.0.0</version.clean.plugin>
-    <version.changes.plugin>2.11</version.changes.plugin>
-    <version.compiler.plugin>3.8.1</version.compiler.plugin>
+    <version.clean.plugin>3.3.2</version.clean.plugin>
+    <version.changes.plugin>2.12.1</version.changes.plugin>
+    <version.compiler.plugin>3.11.0</version.compiler.plugin>
     <version.dependency.plugin>3.3.0</version.dependency.plugin>
     <version.deploy.plugin>2.8.2</version.deploy.plugin>
     <version.eclipse.plugin>2.10</version.eclipse.plugin>
@@ -118,13 +118,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.gmavenplus.plugin>1.5</version.gmavenplus.plugin>
     <version.gpg.plugin>3.1.0</version.gpg.plugin>
     <version.idea.plugin>2.2.1</version.idea.plugin>
-    <version.install.plugin>2.5.2</version.install.plugin>
-    <version.jacoco.plugin>0.8.7</version.jacoco.plugin>
-    <version.jar.plugin>2.6</version.jar.plugin>
-    <version.javadoc.plugin>3.4.1</version.javadoc.plugin>
-    <!-- PAR-362: weaves .class files with AspectJ aspects available in classpath (binary weaving) -->
-    <version.jcabi.plugin>0.14</version.jcabi.plugin>
-    <version.jcabi.aspectj.dependencies.plugin>1.9.9.1</version.jcabi.aspectj.dependencies.plugin>
+    <version.install.plugin>3.1.1</version.install.plugin>
+    <version.jacoco.plugin>0.8.11</version.jacoco.plugin>
+    <version.jar.plugin>3.3.0</version.jar.plugin>
+    <version.javadoc.plugin>3.6.3</version.javadoc.plugin>
+    <version.jcabi.plugin>0.17.0</version.jcabi.plugin>
+    <version.jcabi.aspectj.dependencies.plugin>1.9.20.1</version.jcabi.aspectj.dependencies.plugin>
     <!-- PAR-222 : jdocbook 2.3.6+ has a perf issue. See MPJDOCBOOK-84 -->
     <version.jdocbook.plugin>2.3.5</version.jdocbook.plugin>
     <version.jibx.plugin>1.3.1</version.jibx.plugin>
@@ -136,7 +135,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- PAR-398: Workaround to use clirr plugin with Java 8 (To remove when clirr 2.8 is released) -->
     <version.project-info-reports-shade.plugin>1.2</version.project-info-reports-shade.plugin>
     <version.project-info-reports-bcel-findbugs.plugin>6.0</version.project-info-reports-bcel-findbugs.plugin>
-    <version.plugin.plugin>3.4</version.plugin.plugin>
+    <version.plugin.plugin>3.10.2</version.plugin.plugin>
     <version.release.plugin>3.0.1</version.release.plugin>
     <version.remote-resources.plugin.version>1.5</version.remote-resources.plugin.version>
     <version.resources.plugin>3.2.0</version.resources.plugin>
@@ -144,15 +143,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.site.plugin>3.4</version.site.plugin>
     <version.sonar-maven-report.plugin>0.1</version.sonar-maven-report.plugin>
     <version.source.plugin>3.0.0</version.source.plugin>
-    <version.surefire.plugin>2.22.2</version.surefire.plugin>
+    <version.surefire.plugin>3.2.3</version.surefire.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
     <version.tomcat7.plugin>2.2</version.tomcat7.plugin>
-    <version.versions.plugin>2.2</version.versions.plugin>
+    <version.versions.plugin>2.16.2</version.versions.plugin>
     <version.war.plugin>3.3.2</version.war.plugin>
     <version.xml.plugin>1.0</version.xml.plugin>
     <version.owasp.dependency-check-maven.plugin>3.1.2</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.20.0</org.lombok.plugin.version>
-    <com.github.eirslett.frontend.version>1.12.1</com.github.eirslett.frontend.version>
+    <com.github.eirslett.frontend.version>1.15.0</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
     <node.version>v16.0.0</node.version>
     <npm.version>7.11.2</npm.version>
@@ -179,7 +178,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.optimize>true</maven.compiler.optimize>
     <!-- maven-dependency-plugin -->
     <repoUrl>${exo.public.repo.url}</repoUrl>
     <!-- maven-enforcer-plugin -->
@@ -211,6 +209,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <useCache>true</useCache>
     <archiveClasses>false</archiveClasses>
     <maven.war.attachClasses>false</maven.war.attachClasses>
+    <!-- maven-surefire-plugin -->
+    <test.logging.level>WARN</test.logging.level>
     <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
     <maven.assembly.recompressZippedFiles>false</maven.assembly.recompressZippedFiles>
     <maven.war.recompressZippedFiles>false</maven.war.recompressZippedFiles>
@@ -224,7 +224,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- Tells Sonar to use jacoco for coverage results -->
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
-    <sonar-jacoco-listeners.version>2.5</sonar-jacoco-listeners.version>
+    <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
     <!-- The system property jacoco.outputDir needs to be override on the command line
          with an absolute path if you want to merge results from all modules.
          Example in a Jenkisn build where ${WORKSPACE} is defined and your project in the root directory of the workspace :
@@ -389,6 +389,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>${version.jacoco.plugin}</version>
+          <configuration>
+            <excludes>
+              <exclude>**/entity/*.class</exclude>
+              <exclude>**/model/*.class</exclude>
+              <exclude>**/constant/*.class</exclude>
+              <exclude>**/entity/**/*.class</exclude>
+              <exclude>**/model/**/*.class</exclude>
+              <exclude>**/constant/**/*.class</exclude>
+            </excludes>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -580,6 +590,18 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               </goals>
             </execution>
           </executions>
+          <dependencies>
+            <dependency>
+              <groupId>io.swagger.core.v3</groupId>
+              <artifactId>swagger-annotations</artifactId>
+              <version>2.2.19</version>
+            </dependency>
+            <dependency>
+              <groupId>javax.servlet</groupId>
+              <artifactId>javax.servlet-api</artifactId>
+              <version>4.0.1</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.jboss.maven.plugins</groupId>
@@ -712,14 +734,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <version>${version.sonar-maven-report.plugin}</version>
         </plugin>
         <plugin>
-          <groupId>com.google.code.sortpom</groupId>
-          <artifactId>maven-sortpom-plugin</artifactId>
-          <version>${version.sortpom.plugin}</version>
-          <configuration>
-            <expandEmptyElements>false</expandEmptyElements>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <version>${version.source.plugin}</version>
@@ -760,6 +774,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <ObjectStoreEnvironmentBean.objectStoreDir>${project.build.directory}</ObjectStoreEnvironmentBean.objectStoreDir>
               <gatein.test.tmp.dir>${project.build.directory}</gatein.test.tmp.dir>
               <gatein.test.output.path>${project.build.directory}</gatein.test.output.path>
+              <gatein.email.domain.url>http://localhost:8080</gatein.email.domain.url>
+              <exo.files.storage.dir>target/files</exo.files.storage.dir>
+              <liquibase.showBanner>false</liquibase.showBanner>
+              <liquibase.command.showSummary>OFF</liquibase.command.showSummary>
+              <liquibase.hub.mode>OFF</liquibase.hub.mode>
+              <liquibase.logLevel>WARNING</liquibase.logLevel>
+              <logback.statusListenerClass>ch.qos.logback.core.status.NopStatusListener</logback.statusListenerClass>
+              <io.meeds.logging.level>${test.logging.level}</io.meeds.logging.level>
+              <org.exoplatform.container.configuration.debug>true</org.exoplatform.container.configuration.debug>
             </systemPropertyVariables>
           </configuration>
         </plugin>
@@ -805,6 +828,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <archiveClasses>${archiveClasses}</archiveClasses>
             <attachClasses>${maven.war.attachClasses}</attachClasses>
             <useCache>${useCache}</useCache>
+            <packagingExcludes>**/*.less,**/less/**,**/*.vue,vue-apps/**,vue-app/**</packagingExcludes>
             <!-- Allow to activate/deactivate the recompression of zip files -->
             <recompressZippedFiles>${maven.war.recompressZippedFiles}</recompressZippedFiles>
           </configuration>
@@ -860,6 +884,22 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.jcabi</groupId>
+        <artifactId>jcabi-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
