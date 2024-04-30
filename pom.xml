@@ -151,6 +151,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.xml.plugin>1.0</version.xml.plugin>
     <version.owasp.dependency-check-maven.plugin>3.2.0</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.20.0</org.lombok.plugin.version>
+    <org.lombok.version>1.18.30</org.lombok.version>
     <com.github.eirslett.frontend.version>1.15.0</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
     <node.version>v16.0.0</node.version>
@@ -876,6 +877,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok-maven-plugin</artifactId>
         <version>${org.lombok.plugin.version}</version>
+        <dependencies>
+	    <dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<version>${org.lombok.version}</version>
+	    </dependency>
+	</dependencies>
         <executions>
           <execution>
             <phase>generate-sources</phase>
