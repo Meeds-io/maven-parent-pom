@@ -20,7 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.exoplatform</groupId>
   <artifactId>maven-parent-pom</artifactId>
-  <version>27-SNAPSHOT</version>
+  <version>27-M03</version>
   <packaging>pom</packaging>
   <name>eXo PLF:: Parent POM</name>
   <description>Provides default project configuration for eXo projects</description>
@@ -46,7 +46,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <scm>
     <connection>scm:git:git://github.com/exoplatform/maven-parent-pom.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/maven-parent-pom.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>27-M03</tag>
     <url>https://fisheye.exoplatform.org/browse/maven-parent-pom</url>
   </scm>
   <issueManagement>
@@ -72,7 +72,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </site>
   </distributionManagement>
   <properties>
-    <argLine></argLine>
+    <argLine />
     <surefire.argLine>--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.xml/jdk.xml.internal=ALL-UNNAMED --add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED --add-opens=java.base/jdk.internal.module=ALL-UNNAMED --add-opens=java.base/java.lang.module=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.math=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio.channels=ALL-UNNAMED --add-opens=java.base/java.nio.channels.spi=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.jar=ALL-UNNAMED --add-opens=java.base/java.util.regex=ALL-UNNAMED --add-opens=java.base/java.util.zip=ALL-UNNAMED --add-opens=java.base/javax.net.ssl=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/java.lang.management=ALL-UNNAMED --add-opens=java.base/java.time=ALL-UNNAMED --add-opens=java.base/jdk.internal.vm=ALL-UNNAMED</surefire.argLine>
     <exo.product.name>${project.name}</exo.product.name>
     <!-- **************************************** -->
