@@ -18,11 +18,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.exoplatform</groupId>
+  <groupId>io.meeds</groupId>
   <artifactId>maven-parent-pom</artifactId>
   <version>27-exo-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>eXo PLF:: Parent POM</name>
+  <name>Meeds:: Parent POM</name>
   <description>Provides default project configuration for eXo projects</description>
   <url>${site.url}</url>
   <inceptionYear>2003</inceptionYear>
@@ -44,10 +44,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git://github.com/exoplatform/maven-parent-pom.git</connection>
-    <developerConnection>scm:git:git@github.com:exoplatform/maven-parent-pom.git</developerConnection>
+    <connection>scm:git:git://github.com/Meeds-io/maven-parent-pom.git</connection>
+    <developerConnection>scm:git:git@github.com:Meeds-io/maven-parent-pom.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://fisheye.exoplatform.org/browse/maven-parent-pom</url>
+    <url>https://github.com/Meeds-io/maven-parent-pom</url>
   </scm>
   <issueManagement>
     <system>jira</system>
@@ -93,7 +93,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- Repositories URLs                        -->
     <!-- **************************************** -->
     <exo.releases.repo.url>https://repository.exoplatform.org/service/local/staging/deploy/maven2/</exo.releases.repo.url>
-    <exo.snapshots.repo.url>https://repository.exoplatform.org/content/repositories/exo-snapshots</exo.snapshots.repo.url>
+    <exo.snapshots.repo.url>https://repository.exoplatform.org/content/repositories/meeds-snapshots</exo.snapshots.repo.url>
     <exo.public.repo.url>http://repository.exoplatform.org/public/</exo.public.repo.url>
     <!-- **************************************** -->
     <!-- Site URL                                 -->
