@@ -132,7 +132,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.lesscss.plugin>1.7.0.1.1</version.lesscss.plugin>
     <version.license.plugin>1.8</version.license.plugin>
     <version.mycila-license.plugin>2.11</version.mycila-license.plugin>
-    <version.project-info-reports.plugin>2.9</version.project-info-reports.plugin>
+    <version.project-info-reports.plugin>3.6.1</version.project-info-reports.plugin>
     <!-- PAR-398: Workaround to use clirr plugin with Java 8 (To remove when clirr 2.8 is released) -->
     <version.project-info-reports-shade.plugin>1.2</version.project-info-reports-shade.plugin>
     <version.project-info-reports-bcel-findbugs.plugin>6.0</version.project-info-reports-bcel-findbugs.plugin>
