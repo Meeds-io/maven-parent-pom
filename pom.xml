@@ -134,6 +134,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.license.plugin>1.8</version.license.plugin>
     <version.mycila-license.plugin>2.11</version.mycila-license.plugin>
     <version.project-info-reports.plugin>2.9</version.project-info-reports.plugin>
+    <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
     <!-- PAR-398: Workaround to use clirr plugin with Java 8 (To remove when clirr 2.8 is released) -->
     <version.project-info-reports-shade.plugin>1.2</version.project-info-reports-shade.plugin>
     <version.project-info-reports-bcel-findbugs.plugin>6.0</version.project-info-reports-bcel-findbugs.plugin>
@@ -259,6 +260,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     <sonar.coverage.exclusions>**/*.vue,**/*.js</sonar.coverage.exclusions>
+    <checkstyle-maven-plugin.failOnError>false</checkstyle-maven-plugin.failOnError>
+    <checkstyle-maven-plugin.failOnViolation>false</checkstyle-maven-plugin.failOnViolation>
   </properties>
   <build>
     <pluginManagement>
@@ -829,9 +832,167 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <artifactId>xml-maven-plugin</artifactId>
           <version>${version.xml.plugin}</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${checkstyle-maven-plugin.version}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>${checkstyle-maven-plugin.failOnError}</failsOnError>
+          <failOnViolation>${checkstyle-maven-plugin.failOnViolation}</failOnViolation>
+          <checkstyleRules>
+            <module name="Checker">
+              <property name="fileExtensions" value="java, xml"/>
+              <property name="tabWidth" value="2"/>
+
+              <!-- Excludes all 'module-info.java' files              -->
+              <!-- See https://checkstyle.org/filefilters/index.html -->
+              <module name="BeforeExecutionExclusionFileFilter">
+                <property name="fileNamePattern" value="module\-info\.java$"/>
+              </module>
+
+              <!-- Checks whether files end with a new line.                        -->
+              <!-- See https://checkstyle.org/checks/misc/newlineatendoffile.html -->
+              <module name="NewlineAtEndOfFile"/>
+
+              <!-- Checks that property files contain the same keys.         -->
+              <!-- See https://checkstyle.org/checks/misc/translation.html -->
+              <module name="Translation"/>
+
+              <!-- Checks for Size Violations.                    -->
+              <!-- See https://checkstyle.org/checks/sizes/index.html -->
+
+              <module name="FileLength">
+                <property name="max" value="1500" />
+                <property name="fileExtensions" value="java"/>
+              </module>
+              <module name="LineLength">
+                <property name="max" value="200"/>
+              </module>
+
+              <!-- Checks for whitespace                               -->
+              <!-- See https://checkstyle.org/checks/whitespace/index.html -->
+              <module name="FileTabCharacter"/>
+
+              <!-- Miscellaneous other checks.                   -->
+              <!-- See https://checkstyle.org/checks/misc/index.html -->
+              <module name="RegexpSingleline">
+                <property name="format" value="\s+$"/>
+                <property name="minimum" value="0"/>
+                <property name="maximum" value="0"/>
+                <property name="message" value="Line has trailing spaces."/>
+              </module>
+
+              <module name="TreeWalker">
+
+                <!-- Checks for Javadoc comments.                     -->
+                <!-- See https://checkstyle.org/checks/javadoc/index.html -->
+                <module name="InvalidJavadocPosition"/>
+                <module name="JavadocMethod"/>
+                <module name="JavadocType"/>
+                <module name="JavadocVariable"/>
+                <module name="JavadocStyle"/>
+
+                <!-- Checks for Naming Conventions.                  -->
+                <!-- See https://checkstyle.org/checks/naming/index.html -->
+                <module name="ConstantName"/>
+                <module name="LocalFinalVariableName"/>
+                <module name="LocalVariableName"/>
+                <module name="MemberName"/>
+                <module name="MethodName"/>
+                <module name="PackageName"/>
+                <module name="ParameterName"/>
+                <module name="StaticVariableName"/>
+                <module name="TypeName"/>
+
+                <!-- Checks for imports                              -->
+                <!-- See https://checkstyle.org/checks/imports/index.html -->
+                <module name="AvoidStarImport"/>
+                <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
+                <module name="RedundantImport"/>
+                <module name="UnusedImports">
+                  <property name="processJavadoc" value="false"/>
+                </module>
+
+                <!-- Checks for Size Violations.                    -->
+                <!-- See https://checkstyle.org/checks/sizes/index.html -->
+                <module name="MethodLength"/>
+                <module name="ParameterNumber"/>
+
+                <!-- Checks for whitespace                               -->
+                <!-- See https://checkstyle.org/checks/whitespace/index.html -->
+                <module name="EmptyForIteratorPad"/>
+                <module name="GenericWhitespace"/>
+                <module name="MethodParamPad"/>
+                <module name="NoWhitespaceAfter"/>
+                <module name="NoWhitespaceBefore"/>
+                <module name="OperatorWrap"/>
+                <module name="ParenPad"/>
+                <module name="TypecastParenPad"/>
+                <module name="WhitespaceAfter"/>
+                <module name="WhitespaceAround"/>
+
+                <!-- Modifier Checks                                    -->
+                <!-- See https://checkstyle.org/checks/modifier/index.html -->
+                <module name="ModifierOrder"/>
+                <module name="RedundantModifier"/>
+
+                <!-- Checks for blocks. You know, those {}'s         -->
+                <!-- See https://checkstyle.org/checks/blocks/index.html -->
+                <module name="AvoidNestedBlocks"/>
+                <module name="EmptyBlock"/>
+                <module name="LeftCurly"/>
+                <module name="NeedBraces"/>
+                <module name="RightCurly"/>
+
+                <!-- Checks for common coding problems               -->
+                <!-- See https://checkstyle.org/checks/coding/index.html -->
+                <module name="EmptyStatement"/>
+                <module name="EqualsHashCode"/>
+                <module name="HiddenField"/>
+                <module name="IllegalInstantiation"/>
+                <module name="InnerAssignment"/>
+                <module name="MagicNumber"/>
+                <module name="MissingSwitchDefault"/>
+                <module name="MultipleVariableDeclarations"/>
+                <module name="SimplifyBooleanExpression"/>
+                <module name="SimplifyBooleanReturn"/>
+
+                <!-- Checks for class design                         -->
+                <!-- See https://checkstyle.org/checks/design/index.html -->
+                <module name="DesignForExtension"/>
+                <module name="FinalClass"/>
+                <module name="HideUtilityClassConstructor"/>
+                <module name="InterfaceIsType"/>
+                <module name="VisibilityModifier"/>
+
+                <!-- Miscellaneous other checks.                   -->
+                <!-- See https://checkstyle.org/checks/misc/index.html -->
+                <module name="ArrayTypeStyle"/>
+                <module name="TodoComment"/>
+                <module name="UpperEll"/>
+
+              </module>
+            </module>
+          </checkstyleRules>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -891,6 +1052,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>${version.project-info-reports.plugin}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
