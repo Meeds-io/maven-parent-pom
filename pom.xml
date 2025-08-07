@@ -157,6 +157,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <org.lombok.version>1.18.34</org.lombok.version>
     <com.github.eirslett.frontend.version>1.15.0</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
+    <io.swagger.version>2.2.35</io.swagger.version>
     <node.version>v16.0.0</node.version>
     <npm.version>7.11.2</npm.version>
     <!-- *************** -->
@@ -567,6 +568,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           </executions>
         </plugin>
         <plugin>
+          <!-- old plugin to generate OpenAPI documentation - will be removed after modifications in modules -->
           <groupId>io.openapitools.swagger</groupId>
           <artifactId>swagger-maven-plugin</artifactId>
           <version>${io.openapitools.swagger.version}</version>
@@ -596,6 +598,65 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <version>4.0.1</version>
             </dependency>
           </dependencies>
+        </plugin>
+        <plugin>
+          <!-- plugin to generate OpenAPI documentation for JAXRS REST Services -->
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-maven-plugin</artifactId>
+          <version>${io.swagger.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>io.swagger.core.v3</groupId>
+              <artifactId>swagger-jaxrs2</artifactId>
+              <version>${io.swagger.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>javax.ws.rs</groupId>
+              <artifactId>javax.ws.rs-api</artifactId>
+              <version>2.1.1</version>
+            </dependency>
+            <dependency>
+              <groupId>javax.servlet</groupId>
+              <artifactId>javax.servlet-api</artifactId>
+              <version>4.0.1</version>
+            </dependency>
+          </dependencies>
+          <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>resolve</goal>
+            </goals>
+          </execution>
+        </executions>
+        </plugin>
+        <plugin>
+          <!-- plugin to generate OpenAPI documentation for Spring REST Services -->
+          <groupId>io.github.kbuntrock</groupId>
+          <artifactId>openapi-maven-plugin</artifactId>
+          <version>0.0.23</version>
+          <executions>
+            <execution>
+              <phase>compile</phase>
+              <goals>
+                <goal>documentation</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <!-- plugin to merge JAXRS and Spring OpenAPI documentation -->
+          <groupId>com.rameshkp</groupId>
+          <artifactId>openapi-merger-maven-plugin</artifactId>
+          <version>1.0.5</version>
+          <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>merge</goal>
+            </goals>
+          </execution>
+        </executions>
         </plugin>
         <plugin>
           <groupId>org.jboss.maven.plugins</groupId>
