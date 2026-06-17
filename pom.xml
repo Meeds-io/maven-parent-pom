@@ -20,7 +20,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.meeds</groupId>
   <artifactId>maven-parent-pom</artifactId>
-  <version>29-SNAPSHOT</version>
+  <version>29</version>
   <packaging>pom</packaging>
   <name>Meeds:: Parent POM</name>
   <description>Provides default project configuration for eXo projects</description>
@@ -46,7 +46,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   <scm>
     <connection>scm:git:git://github.com/Meeds-io/maven-parent-pom.git</connection>
     <developerConnection>scm:git:git@github.com:Meeds-io/maven-parent-pom.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>29</tag>
     <url>https://github.com/Meeds-io/maven-parent-pom</url>
   </scm>
   <issueManagement>
@@ -72,7 +72,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     </site>
   </distributionManagement>
   <properties>
-    <argLine></argLine>
+    <argLine />
     <surefire.argLine>--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.xml/jdk.xml.internal=ALL-UNNAMED --add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED --add-opens=java.base/jdk.internal.module=ALL-UNNAMED --add-opens=java.base/java.lang.module=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.math=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio.channels=ALL-UNNAMED --add-opens=java.base/java.nio.channels.spi=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.jar=ALL-UNNAMED --add-opens=java.base/java.util.regex=ALL-UNNAMED --add-opens=java.base/java.util.zip=ALL-UNNAMED --add-opens=java.base/javax.net.ssl=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/java.lang.management=ALL-UNNAMED --add-opens=java.base/java.time=ALL-UNNAMED --add-opens=java.base/jdk.internal.vm=ALL-UNNAMED</surefire.argLine>
     <exo.product.name>${project.name}</exo.product.name>
     <!-- **************************************** -->
@@ -849,135 +849,135 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <failOnViolation>${checkstyle-maven-plugin.failOnViolation}</failOnViolation>
           <checkstyleRules>
             <module name="Checker">
-              <property name="fileExtensions" value="java, xml"/>
-              <property name="tabWidth" value="2"/>
+              <property name="fileExtensions" value="java, xml" />
+              <property name="tabWidth" value="2" />
 
               <!-- Excludes all 'module-info.java' files              -->
               <!-- See https://checkstyle.org/filefilters/index.html -->
               <module name="BeforeExecutionExclusionFileFilter">
-                <property name="fileNamePattern" value="module\-info\.java$"/>
+                <property name="fileNamePattern" value="module\-info\.java$" />
               </module>
 
               <!-- Checks whether files end with a new line.                        -->
               <!-- See https://checkstyle.org/checks/misc/newlineatendoffile.html -->
-              <module name="NewlineAtEndOfFile"/>
+              <module name="NewlineAtEndOfFile" />
 
               <!-- Checks that property files contain the same keys.         -->
               <!-- See https://checkstyle.org/checks/misc/translation.html -->
-              <module name="Translation"/>
+              <module name="Translation" />
 
               <!-- Checks for Size Violations.                    -->
               <!-- See https://checkstyle.org/checks/sizes/index.html -->
 
               <module name="FileLength">
                 <property name="max" value="1500" />
-                <property name="fileExtensions" value="java"/>
+                <property name="fileExtensions" value="java" />
               </module>
               <module name="LineLength">
-                <property name="max" value="200"/>
+                <property name="max" value="200" />
               </module>
 
               <!-- Checks for whitespace                               -->
               <!-- See https://checkstyle.org/checks/whitespace/index.html -->
-              <module name="FileTabCharacter"/>
+              <module name="FileTabCharacter" />
 
               <!-- Miscellaneous other checks.                   -->
               <!-- See https://checkstyle.org/checks/misc/index.html -->
               <module name="RegexpSingleline">
-                <property name="format" value="\s+$"/>
-                <property name="minimum" value="0"/>
-                <property name="maximum" value="0"/>
-                <property name="message" value="Line has trailing spaces."/>
+                <property name="format" value="\s+$" />
+                <property name="minimum" value="0" />
+                <property name="maximum" value="0" />
+                <property name="message" value="Line has trailing spaces." />
               </module>
 
               <module name="TreeWalker">
 
                 <!-- Checks for Javadoc comments.                     -->
                 <!-- See https://checkstyle.org/checks/javadoc/index.html -->
-                <module name="InvalidJavadocPosition"/>
-                <module name="JavadocMethod"/>
-                <module name="JavadocType"/>
-                <module name="JavadocVariable"/>
-                <module name="JavadocStyle"/>
+                <module name="InvalidJavadocPosition" />
+                <module name="JavadocMethod" />
+                <module name="JavadocType" />
+                <module name="JavadocVariable" />
+                <module name="JavadocStyle" />
 
                 <!-- Checks for Naming Conventions.                  -->
                 <!-- See https://checkstyle.org/checks/naming/index.html -->
-                <module name="ConstantName"/>
-                <module name="LocalFinalVariableName"/>
-                <module name="LocalVariableName"/>
-                <module name="MemberName"/>
-                <module name="MethodName"/>
-                <module name="PackageName"/>
-                <module name="ParameterName"/>
-                <module name="StaticVariableName"/>
-                <module name="TypeName"/>
+                <module name="ConstantName" />
+                <module name="LocalFinalVariableName" />
+                <module name="LocalVariableName" />
+                <module name="MemberName" />
+                <module name="MethodName" />
+                <module name="PackageName" />
+                <module name="ParameterName" />
+                <module name="StaticVariableName" />
+                <module name="TypeName" />
 
                 <!-- Checks for imports                              -->
                 <!-- See https://checkstyle.org/checks/imports/index.html -->
-                <module name="AvoidStarImport"/>
-                <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
-                <module name="RedundantImport"/>
+                <module name="AvoidStarImport" />
+                <module name="IllegalImport" /> <!-- defaults to sun.* packages -->
+                <module name="RedundantImport" />
                 <module name="UnusedImports">
-                  <property name="processJavadoc" value="false"/>
+                  <property name="processJavadoc" value="false" />
                 </module>
 
                 <!-- Checks for Size Violations.                    -->
                 <!-- See https://checkstyle.org/checks/sizes/index.html -->
-                <module name="MethodLength"/>
-                <module name="ParameterNumber"/>
+                <module name="MethodLength" />
+                <module name="ParameterNumber" />
 
                 <!-- Checks for whitespace                               -->
                 <!-- See https://checkstyle.org/checks/whitespace/index.html -->
-                <module name="EmptyForIteratorPad"/>
-                <module name="GenericWhitespace"/>
-                <module name="MethodParamPad"/>
-                <module name="NoWhitespaceAfter"/>
-                <module name="NoWhitespaceBefore"/>
-                <module name="OperatorWrap"/>
-                <module name="ParenPad"/>
-                <module name="TypecastParenPad"/>
-                <module name="WhitespaceAfter"/>
-                <module name="WhitespaceAround"/>
+                <module name="EmptyForIteratorPad" />
+                <module name="GenericWhitespace" />
+                <module name="MethodParamPad" />
+                <module name="NoWhitespaceAfter" />
+                <module name="NoWhitespaceBefore" />
+                <module name="OperatorWrap" />
+                <module name="ParenPad" />
+                <module name="TypecastParenPad" />
+                <module name="WhitespaceAfter" />
+                <module name="WhitespaceAround" />
 
                 <!-- Modifier Checks                                    -->
                 <!-- See https://checkstyle.org/checks/modifier/index.html -->
-                <module name="ModifierOrder"/>
-                <module name="RedundantModifier"/>
+                <module name="ModifierOrder" />
+                <module name="RedundantModifier" />
 
                 <!-- Checks for blocks. You know, those {}'s         -->
                 <!-- See https://checkstyle.org/checks/blocks/index.html -->
-                <module name="AvoidNestedBlocks"/>
-                <module name="EmptyBlock"/>
-                <module name="LeftCurly"/>
-                <module name="NeedBraces"/>
-                <module name="RightCurly"/>
+                <module name="AvoidNestedBlocks" />
+                <module name="EmptyBlock" />
+                <module name="LeftCurly" />
+                <module name="NeedBraces" />
+                <module name="RightCurly" />
 
                 <!-- Checks for common coding problems               -->
                 <!-- See https://checkstyle.org/checks/coding/index.html -->
-                <module name="EmptyStatement"/>
-                <module name="EqualsHashCode"/>
-                <module name="HiddenField"/>
-                <module name="IllegalInstantiation"/>
-                <module name="InnerAssignment"/>
-                <module name="MagicNumber"/>
-                <module name="MissingSwitchDefault"/>
-                <module name="MultipleVariableDeclarations"/>
-                <module name="SimplifyBooleanExpression"/>
-                <module name="SimplifyBooleanReturn"/>
+                <module name="EmptyStatement" />
+                <module name="EqualsHashCode" />
+                <module name="HiddenField" />
+                <module name="IllegalInstantiation" />
+                <module name="InnerAssignment" />
+                <module name="MagicNumber" />
+                <module name="MissingSwitchDefault" />
+                <module name="MultipleVariableDeclarations" />
+                <module name="SimplifyBooleanExpression" />
+                <module name="SimplifyBooleanReturn" />
 
                 <!-- Checks for class design                         -->
                 <!-- See https://checkstyle.org/checks/design/index.html -->
-                <module name="DesignForExtension"/>
-                <module name="FinalClass"/>
-                <module name="HideUtilityClassConstructor"/>
-                <module name="InterfaceIsType"/>
-                <module name="VisibilityModifier"/>
+                <module name="DesignForExtension" />
+                <module name="FinalClass" />
+                <module name="HideUtilityClassConstructor" />
+                <module name="InterfaceIsType" />
+                <module name="VisibilityModifier" />
 
                 <!-- Miscellaneous other checks.                   -->
                 <!-- See https://checkstyle.org/checks/misc/index.html -->
-                <module name="ArrayTypeStyle"/>
-                <module name="TodoComment"/>
-                <module name="UpperEll"/>
+                <module name="ArrayTypeStyle" />
+                <module name="TodoComment" />
+                <module name="UpperEll" />
 
               </module>
             </module>
