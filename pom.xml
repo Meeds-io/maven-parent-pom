@@ -103,66 +103,66 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- **************** -->
     <!-- Plugins versions -->
     <!-- **************** -->
-    <version.antrun.plugin>1.8</version.antrun.plugin>
-    <version.assembly.plugin>3.6.0</version.assembly.plugin>
-    <version.buildhelper.plugin>1.10</version.buildhelper.plugin>
-    <version.buildnumber.plugin>1.4</version.buildnumber.plugin>
-    <version.bsc.processor.plugin>5.1</version.bsc.processor.plugin>
-    <version.clean.plugin>3.3.2</version.clean.plugin>
+    <version.antrun.plugin>3.2.0</version.antrun.plugin>
+    <version.assembly.plugin>3.8.0</version.assembly.plugin>
+    <version.buildhelper.plugin>3.6.1</version.buildhelper.plugin>
+    <version.buildnumber.plugin>3.3.0</version.buildnumber.plugin>
+    <version.bsc.processor.plugin>5.2-jdk8</version.bsc.processor.plugin>
+    <version.clean.plugin>3.5.0</version.clean.plugin>
     <version.changes.plugin>2.12.1</version.changes.plugin>
-    <version.compiler.plugin>3.11.0</version.compiler.plugin>
-    <version.dependency.plugin>3.3.0</version.dependency.plugin>
-    <version.deploy.plugin>2.8.2</version.deploy.plugin>
+    <version.compiler.plugin>3.15.0</version.compiler.plugin>
+    <version.dependency.plugin>3.11.0</version.dependency.plugin>
+    <version.deploy.plugin>3.1.4</version.deploy.plugin>
     <version.eclipse.plugin>2.10</version.eclipse.plugin>
-    <version.enforcer.plugin>3.4.1</version.enforcer.plugin>
+    <version.enforcer.plugin>3.6.3</version.enforcer.plugin>
     <version.failsafe.plugin>${version.surefire.plugin}</version.failsafe.plugin>
     <version.gmaven.plugin>1.5</version.gmaven.plugin>
-    <version.gmavenplus.plugin>1.5</version.gmavenplus.plugin>
-    <version.gpg.plugin>3.1.0</version.gpg.plugin>
+    <version.gmavenplus.plugin>5.1.0</version.gmavenplus.plugin>
+    <version.gpg.plugin>3.2.8</version.gpg.plugin>
     <version.idea.plugin>2.2.1</version.idea.plugin>
-    <version.install.plugin>3.1.1</version.install.plugin>
-    <version.jacoco.plugin>0.8.11</version.jacoco.plugin>
-    <version.jar.plugin>3.3.0</version.jar.plugin>
-    <version.javadoc.plugin>3.6.3</version.javadoc.plugin>
-    <plugin.aspectj.version>1.15.0</plugin.aspectj.version>
-    <org.aspectj.version>1.9.22.1</org.aspectj.version>
+    <version.install.plugin>3.1.4</version.install.plugin>
+    <version.jacoco.plugin>0.8.15</version.jacoco.plugin>
+    <version.jar.plugin>3.5.1</version.jar.plugin>
+    <version.javadoc.plugin>3.12.0</version.javadoc.plugin>
+    <plugin.aspectj.version>1.16.0</plugin.aspectj.version>
+    <org.aspectj.version>1.9.25</org.aspectj.version>
     <!-- PAR-222 : jdocbook 2.3.6+ has a perf issue. See MPJDOCBOOK-84 -->
     <version.jdocbook.plugin>2.3.5</version.jdocbook.plugin>
     <version.jibx.plugin>1.3.1</version.jibx.plugin>
-    <version.jxr.plugin>2.5</version.jxr.plugin>
+    <version.jxr.plugin>3.6.0</version.jxr.plugin>
     <version.lesscss.plugin>1.7.0.1.1</version.lesscss.plugin>
-    <version.license.plugin>1.8</version.license.plugin>
-    <version.mycila-license.plugin>2.11</version.mycila-license.plugin>
-    <version.project-info-reports.plugin>2.9</version.project-info-reports.plugin>
+    <version.license.plugin>2.7.1</version.license.plugin>
+    <version.mycila-license.plugin>5.1.1</version.mycila-license.plugin>
+    <version.project-info-reports.plugin>3.9.0</version.project-info-reports.plugin>
     <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
     <!-- PAR-398: Workaround to use clirr plugin with Java 8 (To remove when clirr 2.8 is released) -->
-    <version.project-info-reports-shade.plugin>1.2</version.project-info-reports-shade.plugin>
+    <version.project-info-reports-shade.plugin>3.2.0</version.project-info-reports-shade.plugin>
     <version.project-info-reports-bcel-findbugs.plugin>6.0</version.project-info-reports-bcel-findbugs.plugin>
-    <version.plugin.plugin>3.10.2</version.plugin.plugin>
-    <version.release.plugin>3.0.1</version.release.plugin>
-    <version.remote-resources.plugin.version>1.5</version.remote-resources.plugin.version>
-    <version.resources.plugin>3.2.0</version.resources.plugin>
-    <version.shade.plugin>3.5.3</version.shade.plugin>
+    <version.plugin.plugin>3.15.2</version.plugin.plugin>
+    <version.release.plugin>3.3.1</version.release.plugin>
+    <version.remote-resources.plugin.version>3.3.0</version.remote-resources.plugin.version>
+    <version.resources.plugin>3.5.0</version.resources.plugin>
+    <version.shade.plugin>3.6.2</version.shade.plugin>
     <version.site.plugin>3.4</version.site.plugin>
     <version.sonar-maven-report.plugin>0.1</version.sonar-maven-report.plugin>
-    <version.source.plugin>3.0.0</version.source.plugin>
-    <version.surefire.plugin>3.2.3</version.surefire.plugin>
-    <version.taglist.plugin>2.4</version.taglist.plugin>
+    <version.source.plugin>3.4.0</version.source.plugin>
+    <version.surefire.plugin>3.5.6</version.surefire.plugin>
+    <version.taglist.plugin>3.2.2</version.taglist.plugin>
     <version.tomcat7.plugin>2.2</version.tomcat7.plugin>
-    <version.versions.plugin>2.16.2</version.versions.plugin>
-    <version.war.plugin>3.3.2</version.war.plugin>
-    <version.xml.plugin>1.0</version.xml.plugin>
-    <version.owasp.dependency-check-maven.plugin>3.2.0</version.owasp.dependency-check-maven.plugin>
+    <version.versions.plugin>2.21.0</version.versions.plugin>
+    <version.war.plugin>3.5.1</version.war.plugin>
+    <version.xml.plugin>1.2.1</version.xml.plugin>
+    <version.owasp.dependency-check-maven.plugin>13.0.0</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.20.0</org.lombok.plugin.version>
-    <org.lombok.version>1.18.34</org.lombok.version>
-    <com.github.eirslett.frontend.version>1.15.0</com.github.eirslett.frontend.version>
+    <org.lombok.version>1.18.46</org.lombok.version>
+    <com.github.eirslett.frontend.version>2.0.2</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
     <node.version>v16.0.0</node.version>
     <npm.version>7.11.2</npm.version>
     <!-- *************** -->
     <!-- Others versions -->
     <!-- *************** -->
-    <version.animal-sniffer.enforcer-rule>1.18</version.animal-sniffer.enforcer-rule>
+    <version.animal-sniffer.enforcer-rule>1.27</version.animal-sniffer.enforcer-rule>
     <!-- PAR-193 : performances boost workaround -->
     <version.plexus-utils>3.0.18</version.plexus-utils>
     <!-- PAR-155 : Produce project sources package distribution -->
@@ -189,7 +189,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <jdk.min.version>${maven.compiler.source}</jdk.min.version>
     <exo.release.enforce.requirePluginVersions.banSnapshots>true</exo.release.enforce.requirePluginVersions.banSnapshots>
     <!-- Extra enforcer rules -->
-    <extra-enforcer-rules.version>1.8.0</extra-enforcer-rules.version>
+    <extra-enforcer-rules.version>1.12.0</extra-enforcer-rules.version>
     <!-- gmaven-plugin -->
     <gmaven-plugin.providerSelection>2.0</gmaven-plugin.providerSelection>
     <!-- maven-gpg-plugin -->
@@ -588,7 +588,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <dependency>
               <groupId>io.swagger.core.v3</groupId>
               <artifactId>swagger-annotations</artifactId>
-              <version>2.2.19</version>
+              <version>2.2.53</version>
             </dependency>
             <dependency>
               <groupId>javax.servlet</groupId>
@@ -610,7 +610,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <dependency>
               <groupId>org.apache.bcel</groupId>
               <artifactId>bcel</artifactId>
-              <version>6.3</version>
+              <version>6.12.0</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -1018,7 +1018,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
               <buildNumberPropertyName>buildNumber</buildNumberPropertyName>
               <revisionOnScmFailure>no_revision</revisionOnScmFailure>
               <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
-              <timestampFormat>{0, date,yyyyMMdd}</timestampFormat>
+              <timestampFormat>yyyyMMdd</timestampFormat>
             </configuration>
           </execution>
         </executions>
