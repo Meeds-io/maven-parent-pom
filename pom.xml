@@ -157,8 +157,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <org.lombok.version>1.18.34</org.lombok.version>
     <com.github.eirslett.frontend.version>1.15.0</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
-    <node.version>v16.0.0</node.version>
-    <npm.version>7.11.2</npm.version>
+    <node.version>v26.13.0</node.version>
+    <npm.version>11.20.0</npm.version>
     <!-- *************** -->
     <!-- Others versions -->
     <!-- *************** -->
