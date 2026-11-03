@@ -103,7 +103,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- **************** -->
     <!-- Plugins versions -->
     <!-- **************** -->
-    <version.antrun.plugin>1.8</version.antrun.plugin>
+    <version.antrun.plugin>3.1.0</version.antrun.plugin>
     <version.assembly.plugin>3.6.0</version.assembly.plugin>
     <version.buildhelper.plugin>1.10</version.buildhelper.plugin>
     <version.buildnumber.plugin>1.4</version.buildnumber.plugin>
