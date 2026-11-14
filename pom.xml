@@ -110,7 +110,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.bsc.processor.plugin>5.1</version.bsc.processor.plugin>
     <version.clean.plugin>3.3.2</version.clean.plugin>
     <version.changes.plugin>2.12.1</version.changes.plugin>
-    <version.compiler.plugin>3.11.0</version.compiler.plugin>
+    <version.compiler.plugin>3.14.1</version.compiler.plugin>
     <version.cyclonedx.plugin>2.9.3</version.cyclonedx.plugin>
     <version.dependency.plugin>3.3.0</version.dependency.plugin>
     <version.deploy.plugin>2.8.2</version.deploy.plugin>
@@ -122,11 +122,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.gpg.plugin>3.1.0</version.gpg.plugin>
     <version.idea.plugin>2.2.1</version.idea.plugin>
     <version.install.plugin>3.1.1</version.install.plugin>
-    <version.jacoco.plugin>0.8.11</version.jacoco.plugin>
+    <version.jacoco.plugin>0.8.14</version.jacoco.plugin>
     <version.jar.plugin>3.3.0</version.jar.plugin>
     <version.javadoc.plugin>3.6.3</version.javadoc.plugin>
-    <plugin.aspectj.version>1.15.0</plugin.aspectj.version>
-    <org.aspectj.version>1.9.22.1</org.aspectj.version>
+    <plugin.aspectj.version>1.16.1</plugin.aspectj.version>
+    <org.aspectj.version>1.9.25.1</org.aspectj.version>
     <!-- PAR-222 : jdocbook 2.3.6+ has a perf issue. See MPJDOCBOOK-84 -->
     <version.jdocbook.plugin>2.3.5</version.jdocbook.plugin>
     <version.jibx.plugin>1.3.1</version.jibx.plugin>
@@ -155,7 +155,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.xml.plugin>1.0</version.xml.plugin>
     <version.owasp.dependency-check-maven.plugin>3.2.0</version.owasp.dependency-check-maven.plugin>
     <org.lombok.plugin.version>1.18.20.0</org.lombok.plugin.version>
-    <org.lombok.version>1.18.34</org.lombok.version>
+    <org.lombok.version>1.18.46</org.lombok.version>
     <com.github.eirslett.frontend.version>1.15.0</com.github.eirslett.frontend.version>
     <io.openapitools.swagger.version>2.1.6</io.openapitools.swagger.version>
     <node.version>v26.13.0</node.version>
@@ -183,8 +183,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <!-- maven-clirr-plugin -->
     <textOutputFile>${project.build.directory}/clirr-report.txt</textOutputFile>
     <!-- maven-compiler-plugin -->
-    <maven.compiler.target>21</maven.compiler.target>
-    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>25</maven.compiler.target>
+    <maven.compiler.source>25</maven.compiler.source>
+    <!-- Compile against the API of this Java version whatever JDK runs the build -->
+    <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <!-- maven-dependency-plugin -->
@@ -194,7 +196,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <jdk.min.version>${maven.compiler.source}</jdk.min.version>
     <exo.release.enforce.requirePluginVersions.banSnapshots>true</exo.release.enforce.requirePluginVersions.banSnapshots>
     <!-- Extra enforcer rules -->
-    <extra-enforcer-rules.version>1.8.0</extra-enforcer-rules.version>
+    <extra-enforcer-rules.version>1.12.1</extra-enforcer-rules.version>
     <!-- gmaven-plugin -->
     <gmaven-plugin.providerSelection>2.0</gmaven-plugin.providerSelection>
     <!-- maven-gpg-plugin -->
@@ -319,6 +321,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${version.compiler.plugin}</version>
+          <configuration>
+            <!-- Since JDK 23, javac runs an annotation processor found on the class path, such as Lombok, only when asked to -->
+            <proc>full</proc>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.cyclonedx</groupId>
