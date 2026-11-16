@@ -1236,7 +1236,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-              <release>${maven.compiler.source}</release>
+              <release>${maven.compiler.release}</release>
             </configuration>
           </plugin>
           <plugin>
