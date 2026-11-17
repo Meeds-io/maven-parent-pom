@@ -1465,8 +1465,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     String zipPurl = 'pkg:maven/' + project.groupId + '/' + project.artifactId + '@' + project.version + '?type=zip'
                     Map keptDependsOn = kept.keySet().collectEntries { ref -> [(ref): keptReachedFrom(ref)] }
                     // Every kept component is reachable from the zip: the zip depends on the components its packaging module
-                    // reaches first, then, while some stay unreached, on those no other unreached component reaches,
-                    // or on one member of a cycle when every unreached component is reached by another.
+                    // reaches first, then, while some stay unreached, on those no other unreached component reaches.
                     Set rootDependsOn = keptReachedFrom(rawRootRef)
                     Set reachedFromRoot = new HashSet()
                     Closure markReachable = { Collection from ->
@@ -1479,26 +1478,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       }
                     }
                     markReachable(rootDependsOn)
-                    // A component reaching itself is a member of a cycle.
-                    Closure<Boolean> inCycle = { String ref ->
-                      Set visited = new HashSet()
-                      Deque pending = new ArrayDeque(keptDependsOn[ref])
-                      while (!pending.isEmpty()) {
-                        String next = pending.removeFirst()
-                        if (next == ref) {
-                          return true
-                        }
-                        if (visited.add(next)) {
-                          pending.addAll(keptDependsOn[next])
-                        }
-                      }
-                      false
-                    }
                     Set unreached = kept.keySet().findAll { !reachedFromRoot.contains(it) } as LinkedHashSet
                     while (!unreached.isEmpty()) {
                       Set reachedFromUnreached = unreached.collectMany { keptDependsOn[it] } as Set
-                      Collection entries = unreached.findAll { !reachedFromUnreached.contains(it) } ?:
-                          [unreached.find { inCycle(it) }]
+                      // A resolved Maven dependency tree holds no cycle, so some unreached component is reached by no other;
+                      // linking every unreached one only guards the loop against a cyclic SBOM.
+                      Collection entries = unreached.findAll { !reachedFromUnreached.contains(it) } ?: unreached
                       rootDependsOn.addAll(entries)
                       markReachable(entries)
                       unreached.removeAll(reachedFromRoot)
