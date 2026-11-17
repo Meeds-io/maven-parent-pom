@@ -1338,6 +1338,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </goals>
                 <configuration>
                   <skipScriptExecution>${sbom.skip}</skipScriptExecution>
+                  <includeClasspath>PLUGIN_ONLY</includeClasspath>
                   <properties>
                     <property>
                       <name>rawBom</name>
@@ -1462,23 +1463,30 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
                     String rawRootRef = bom.metadata?.component?.get('bom-ref')
                     String zipPurl = 'pkg:maven/' + project.groupId + '/' + project.artifactId + '@' + project.version + '?type=zip'
+                    Map keptDependsOn = kept.keySet().collectEntries { ref -> [(ref): keptReachedFrom(ref)] }
+                    // The zip depends on the components its packaging module reaches first, and on those no path reaches.
                     Set rootDependsOn = keptReachedFrom(rawRootRef)
-                    rootDependsOn.addAll(kept.keySet())
+                    Set reachedFromRoot = new HashSet()
+                    Deque reachable = new ArrayDeque(rootDependsOn)
+                    while (!reachable.isEmpty()) {
+                      String next = reachable.removeFirst()
+                      if (reachedFromRoot.add(next)) {
+                        reachable.addAll(keptDependsOn[next])
+                      }
+                    }
+                    rootDependsOn.addAll(kept.keySet().findAll { !reachedFromRoot.contains(it) })
 
                     bom.serialNumber = 'urn:uuid:' + UUID.randomUUID()
-                    bom.metadata.component = [
-                      type       : 'application',
-                      'bom-ref'  : zipPurl,
-                      group      : project.groupId,
-                      name       : project.artifactId,
-                      version    : project.version,
-                      description: project.description,
-                      hashes     : hashesOf { new FileInputStream(zipFile) },
-                      purl       : zipPurl,
-                    ].findAll { it.value != null }
+                    // The zip replaces the packaging module as root, keeping its publisher, licenses and references.
+                    Map root = new LinkedHashMap(bom.metadata.component as Map)
+                    root.type = 'application'
+                    root['bom-ref'] = zipPurl
+                    root.purl = zipPurl
+                    root.hashes = hashesOf { new FileInputStream(zipFile) }
+                    bom.metadata.component = root
                     bom.components = kept.values().toList()
                     bom.dependencies = [[ref: zipPurl, dependsOn: rootDependsOn.toList()]] +
-                        kept.keySet().collect { ref -> [ref: ref, dependsOn: keptReachedFrom(ref).toList()] }
+                        keptDependsOn.collect { ref, dependsOn -> [ref: ref, dependsOn: dependsOn.toList()] }
 
                     outFile.parentFile.mkdirs()
                     outFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(bom))
