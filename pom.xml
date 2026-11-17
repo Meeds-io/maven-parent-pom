@@ -1464,7 +1464,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     String rawRootRef = bom.metadata?.component?.get('bom-ref')
                     String zipPurl = 'pkg:maven/' + project.groupId + '/' + project.artifactId + '@' + project.version + '?type=zip'
                     Map keptDependsOn = kept.keySet().collectEntries { ref -> [(ref): keptReachedFrom(ref)] }
-                    // The zip depends on the components its packaging module reaches first, and on those no path reaches.
+                    // The zip depends on the components its packaging module reaches first, and on those no other component reaches.
                     Set rootDependsOn = keptReachedFrom(rawRootRef)
                     Set reachedFromRoot = new HashSet()
                     Deque reachable = new ArrayDeque(rootDependsOn)
@@ -1474,7 +1474,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         reachable.addAll(keptDependsOn[next])
                       }
                     }
-                    rootDependsOn.addAll(kept.keySet().findAll { !reachedFromRoot.contains(it) })
+                    Set unreached = kept.keySet().findAll { !reachedFromRoot.contains(it) } as Set
+                    Set reachedFromUnreached = unreached.collectMany { keptDependsOn[it] } as Set
+                    Set orphans = unreached.findAll { !reachedFromUnreached.contains(it) } as Set
+                    // A cycle of unreached components has no entry point: all of them are linked.
+                    rootDependsOn.addAll(orphans ?: unreached)
 
                     bom.serialNumber = 'urn:uuid:' + UUID.randomUUID()
                     // The zip replaces the packaging module as root, keeping its publisher, licenses and references.
