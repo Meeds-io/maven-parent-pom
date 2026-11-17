@@ -1479,10 +1479,26 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       }
                     }
                     markReachable(rootDependsOn)
+                    // A component reaching itself is a member of a cycle.
+                    Closure<Boolean> inCycle = { String ref ->
+                      Set visited = new HashSet()
+                      Deque pending = new ArrayDeque(keptDependsOn[ref])
+                      while (!pending.isEmpty()) {
+                        String next = pending.removeFirst()
+                        if (next == ref) {
+                          return true
+                        }
+                        if (visited.add(next)) {
+                          pending.addAll(keptDependsOn[next])
+                        }
+                      }
+                      false
+                    }
                     Set unreached = kept.keySet().findAll { !reachedFromRoot.contains(it) } as LinkedHashSet
                     while (!unreached.isEmpty()) {
                       Set reachedFromUnreached = unreached.collectMany { keptDependsOn[it] } as Set
-                      Collection entries = unreached.findAll { !reachedFromUnreached.contains(it) } ?: [unreached.first()]
+                      Collection entries = unreached.findAll { !reachedFromUnreached.contains(it) } ?:
+                          [unreached.find { inCycle(it) }]
                       rootDependsOn.addAll(entries)
                       markReachable(entries)
                       unreached.removeAll(reachedFromRoot)
