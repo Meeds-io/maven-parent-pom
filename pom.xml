@@ -168,6 +168,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
     <version.plexus-utils>3.0.18</version.plexus-utils>
     <!-- Groovy running the SBOM filter script of the exo-release profile -->
     <version.groovy.sbom>4.0.33</version.groovy.sbom>
+    <!-- CycloneDX library validating the filtered SBOM: the one cyclonedx-maven-plugin uses -->
+    <version.cyclonedx-core.sbom>9.0.5</version.cyclonedx-core.sbom>
     <!-- PAR-155 : Produce project sources package distribution -->
     <version.apache-source-release-assembly-descriptor>1.0.4</version.apache-source-release-assembly-descriptor>
     <!-- PAR-92 : Bundle used to manage file headers -->
@@ -1510,6 +1512,18 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     outFile.parentFile.mkdirs()
                     outFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(bom))
 
+                    // The published SBOM is checked against the CycloneDX 1.6 schema, and every reference of its graph against its components.
+                    List invalid = new org.cyclonedx.parsers.JsonParser().validate(outFile, org.cyclonedx.Version.VERSION_16)*.message
+                    Set knownRefs = (kept.keySet() + [zipPurl]) as Set
+                    bom.dependencies.each { dependency ->
+                      ([dependency.ref] + dependency.dependsOn).findAll { !knownRefs.contains(it) }.each {
+                        invalid << ('dependency reference ' + it + ' names no component of the SBOM')
+                      }
+                    }
+                    if (!invalid.isEmpty()) {
+                      throw new IllegalStateException('SBOM: ' + outFile.name + ' is not a valid CycloneDX 1.6 SBOM: ' + invalid.join('; '))
+                    }
+
                     log.info('SBOM: ' + zipFile.name + ' delivers ' + deliveredCount + ' files, ' + kept.size() + ' of the '
                         + components.size() + ' components of the Maven graph kept, ' + gaps.size() + ' gap(s), written to ' + outFile)
                     gaps.each { log.warn('SBOM: ' + it) }
@@ -1531,6 +1545,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <groupId>org.apache.groovy</groupId>
                 <artifactId>groovy-json</artifactId>
                 <version>${version.groovy.sbom}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-core-java</artifactId>
+                <version>${version.cyclonedx-core.sbom}</version>
               </dependency>
             </dependencies>
           </plugin>
