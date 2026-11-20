@@ -1366,8 +1366,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
                     // Reduces the CycloneDX SBOM of the module's whole Maven graph to the files its zip delivers.
                     // No less-than character in this script: maven-release-plugin's POM rewrite replaces the first run of two or more whitespace characters after one, up to the next greater-than, with one space, which can join script lines.
-                    // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version) among the components
-                    // whose artifact has the file's extension, then by SHA-256 among the contents of the zips of the graph.
+                    // A delivered file is identified by SHA-256 among the components of the graph, then by SHA-256 among the contents of
+                    // the zips of the graph, then by artifactId (bare or followed by the version) among the components whose artifact
+                    // has the file's extension.
                     // FAIL_ON_GAPS: an unidentified, ambiguous, differing or duplicate delivered file fails the build when true.
                     final boolean FAIL_ON_GAPS = false
                     final List DELIVERED_EXTENSIONS = ['.jar', '.war']
@@ -1435,7 +1436,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     List gaps = []
                     int deliveredCount = 0
                     List delivered = []
-                    List unidentified = []
                     new ZipFile(zipFile).withCloseable { zip ->
                       zip.entries().toList().findAll { entry ->
                         !entry.directory && DELIVERED_EXTENSIONS.any { entry.name.endsWith(it) }
@@ -1453,40 +1453,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     }
                     deliveredCount = delivered.size()
 
-                    // The files identified by SHA-256 come first, so that a component keeps the hashes of its identical file whatever
-                    // the order of the zip's entries; another file identified as an already kept component is a gap, unless it is an
-                    // identical copy of the kept file.
-                    List bySha = delivered.findAll { !bySha256[it.sha256].isEmpty() }
-                    List byNameOnly = delivered.findAll { bySha256[it.sha256].isEmpty() }
-                    (bySha + byNameOnly).each { file ->
-                      boolean matchedByName = bySha256[file.sha256].isEmpty()
-                      List matches = matchedByName ? byName[file.extension + ':' + file.baseName].unique(false) : bySha256[file.sha256].unique(false)
-                      if (matches.size() == 1 && keptFrom.containsKey(matches[0]['bom-ref'])) {
-                        if (keptSha256[matches[0]['bom-ref']] == file.sha256) {
-                          return
-                        }
-                        gaps.add('duplicate file ' + file.name + ': ' + matches[0].purl + ' is already identified as ' + keptFrom[matches[0]['bom-ref']])
-                      } else if (matches.size() == 1) {
-                        if (matchedByName) {
-                          gaps.add('differing file ' + file.name + ': matched by name to ' + matches[0].purl + ', its SHA-256 differs')
-                        }
-                        Map component = matches[0] as Map
-                        component.hashes = file.hashes
-                        kept[component['bom-ref']] = component
-                        keptFrom[component['bom-ref']] = file.name
-                        keptSha256[component['bom-ref']] = file.sha256
-                      } else if (matches.isEmpty()) {
-                        unidentified.add(file)
-                      } else {
-                        gaps.add('ambiguous file ' + file.name + ': ' + matches.collect { it.purl })
-                      }
-                    }
-
-                    // A file no component of the graph identifies may come from a zip of the graph unpacked into the delivered zip.
-                    // It is identified by SHA-256 among the components, nested ones included, of the zip's published SBOM (its json
-                    // artifact of classifier cyclonedx) when the zip has one, then among the zip's own entries, and is nested in the
-                    // zip's component, which is then kept; its bom-ref is the zip's followed by '!/' and the file's path in the
-                    // delivered zip. The published SBOMs of all the zips are searched before their entries; zips inside a zip are not opened.
+                    // A file no component of the graph identifies by SHA-256 may come from a zip of the graph unpacked into the delivered
+                    // zip. It is identified by SHA-256 among the components, nested ones included, of the zip's published SBOM (its json
+                    // artifact of classifier cyclonedx) when the zip has one, then among the zip's own entries, before any match by name:
+                    // the zip's own file is what is delivered, whatever version the graph resolves under the same name. It is nested in
+                    // the zip's component, which is then kept; its bom-ref is the zip's followed by '!/' and the file's path in the
+                    // delivered zip. The published SBOMs of all the zips are searched before their entries, and a file several zips hold
+                    // goes to the first of them in the graph's order; zips inside a zip are not opened.
                     Map artifactFiles = [:]
                     project.artifacts.findAll { !it.classifier && it.file }.each { artifact ->
                       [artifact.version, artifact.baseVersion].each { version ->
@@ -1515,10 +1488,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       null
                     }
                     Closure indexComponents
-                    indexComponents = { List list, Map index ->
-                      list.each { inner ->
-                        inner.hashes?.findAll { it.alg == 'SHA-256' }?.each { index.putIfAbsent(it.content.toLowerCase(), inner) }
-                        indexComponents((inner.components ?: []) as List, index)
+                    indexComponents = { def list, Map index ->
+                      (list instanceof List ? list : []).findAll { it instanceof Map }.each { inner ->
+                        (inner.hashes instanceof List ? inner.hashes : []).findAll {
+                          it instanceof Map && it.alg == 'SHA-256' && it.content instanceof String
+                        }.each { index.putIfAbsent(it.content.toLowerCase(), inner) }
+                        indexComponents(inner.components, index)
                       }
                     }
                     Closure contentOf = { Map component, File file ->
@@ -1526,7 +1501,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       Map entriesBySha = [:]
                       Map published = publishedSbom(component)
                       if (published != null) {
-                        indexComponents((published.components ?: []) as List, publishedBySha)
+                        try {
+                          indexComponents(published.components, publishedBySha)
+                        } catch (RuntimeException e) {
+                          log.warn('SBOM: the published SBOM of ' + component.purl + ' cannot be read (' + e + '), its entries are searched instead')
+                          publishedBySha.clear()
+                          published = null
+                        }
                       }
                       new ZipFile(file).withCloseable { zip ->
                         zip.entries().toList().findAll { entry ->
@@ -1558,33 +1539,78 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       Properties single = found.size() == 1 ? found[0] : null
                       ['groupId', 'artifactId', 'version'].every { single?.getProperty(it) } ? single : null
                     }
+                    // The fields a component copied from a published SBOM keeps.
+                    final List COPIED_FIELDS = ['type', 'supplier', 'publisher', 'group', 'name', 'version', 'description', 'licenses',
+                                                'copyright', 'cpe', 'purl', 'externalReferences', 'properties']
 
+                    List bySha = delivered.findAll { !bySha256[it.sha256].isEmpty() }
+                    List notBySha = delivered.findAll { bySha256[it.sha256].isEmpty() }
                     List contents = []
-                    if (!unidentified.isEmpty()) {
+                    if (!notBySha.isEmpty()) {
                       contents = components.findAll { component ->
-                        extensionOf(component) == 'zip' && artifactFiles[component.group + ':' + component.name + ':' + component.version + ':zip']
+                        extensionOf(component) == 'zip' && !(component.purl ?: '').contains('classifier=') &&
+                            artifactFiles[component.group + ':' + component.name + ':' + component.version + ':zip']
                       }.collect { component ->
                         contentOf(component, artifactFiles[component.group + ':' + component.name + ':' + component.version + ':zip'])
                       }
                     }
-                    int nestedCount = 0
-                    new ZipFile(zipFile).withCloseable { zip ->
-                      unidentified.each { file ->
-                        Map content = contents.find { it.publishedBySha.containsKey(file.sha256) }
-                        Map found = content?.publishedBySha?.get(file.sha256)
-                        if (content == null) {
-                          content = contents.find { it.entriesBySha.containsKey(file.sha256) }
-                          found = content?.entriesBySha?.get(file.sha256)
-                        }
-                        if (content == null) {
-                          gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor with its name and extension, nor in the zips of the graph')
+                    List fromZips = []
+                    List byNameOnly = []
+                    notBySha.each { file ->
+                      Map content = contents.find { it.publishedBySha.containsKey(file.sha256) }
+                      Map found = content?.publishedBySha?.get(file.sha256)
+                      if (content == null) {
+                        content = contents.find { it.entriesBySha.containsKey(file.sha256) }
+                        found = content?.entriesBySha?.get(file.sha256)
+                      }
+                      if (content == null) {
+                        byNameOnly.add(file)
+                      } else {
+                        fromZips.add([file: file, content: content, found: found])
+                      }
+                    }
+
+                    // The files identified by SHA-256 come first, so that a component keeps the hashes of its identical file whatever
+                    // the order of the zip's entries; another file identified as an already kept component is a gap, unless it is an
+                    // identical copy of the kept file.
+                    (bySha + byNameOnly).each { file ->
+                      boolean matchedByName = bySha256[file.sha256].isEmpty()
+                      List matches = matchedByName ? byName[file.extension + ':' + file.baseName].unique(false) : bySha256[file.sha256].unique(false)
+                      if (matches.size() == 1 && keptFrom.containsKey(matches[0]['bom-ref'])) {
+                        if (keptSha256[matches[0]['bom-ref']] == file.sha256) {
                           return
                         }
-                        Map zipComponent = content.component
+                        gaps.add('duplicate file ' + file.name + ': ' + matches[0].purl + ' is already identified as ' + keptFrom[matches[0]['bom-ref']])
+                      } else if (matches.size() == 1) {
+                        if (matchedByName) {
+                          gaps.add('differing file ' + file.name + ': matched by name to ' + matches[0].purl + ', its SHA-256 differs')
+                        }
+                        Map component = matches[0] as Map
+                        component.hashes = file.hashes
+                        kept[component['bom-ref']] = component
+                        keptFrom[component['bom-ref']] = file.name
+                        keptSha256[component['bom-ref']] = file.sha256
+                      } else if (matches.isEmpty()) {
+                        gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor in the zips of the graph, nor with its name and extension')
+                      } else {
+                        gaps.add('ambiguous file ' + file.name + ': ' + matches.collect { it.purl })
+                      }
+                    }
+
+                    new ZipFile(zipFile).withCloseable { zip ->
+                      fromZips.each { match ->
+                        Map file = match.file
+                        Map found = match.found
+                        Map zipComponent = match.content.component
                         Map nested
                         if (found.entry == null) {
-                          nested = new LinkedHashMap(found)
-                          nested.remove('components')
+                          nested = found.findAll { COPIED_FIELDS.contains(it.key) }
+                          if (nested.properties instanceof List) {
+                            nested.properties = nested.properties.findAll { !(it instanceof Map && it.name == 'io.meeds:sbom:zip-entry') }
+                          }
+                          if (!nested.properties) {
+                            nested.remove('properties')
+                          }
                         } else {
                           Properties coordinates = coordinatesOf(zip.getInputStream(zip.getEntry(file.name)))
                           nested = [type: 'library', name: coordinates ? coordinates.getProperty('artifactId') : file.baseName]
@@ -1599,9 +1625,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         nested.hashes = file.hashes
                         zipComponent.components = ((zipComponent.components ?: []) as List) + [nested]
                         kept[zipComponent['bom-ref']] = zipComponent
-                        nestedCount++
                       }
                     }
+                    int nestedCount = fromZips.size()
                     contents.findAll { !it.published && kept.containsKey(it.component['bom-ref']) }.each {
                       log.info('SBOM: ' + it.component.purl + ' has no published SBOM, the files it delivers are identified from its entries')
                     }
