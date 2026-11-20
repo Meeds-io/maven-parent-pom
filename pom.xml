@@ -1366,7 +1366,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
                     // Reduces the CycloneDX SBOM of the module's whole Maven graph to the files its zip delivers.
                     // No less-than character in this script: maven-release-plugin's POM rewrite replaces the first run of two or more whitespace characters after one, up to the next greater-than, with one space, which can join script lines.
-                    // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version).
+                    // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version) among the components
+                    // whose artifact has the file's extension.
                     // FAIL_ON_GAPS: an unidentified, ambiguous or differing delivered file fails the build when true.
                     final boolean FAIL_ON_GAPS = false
                     final List DELIVERED_EXTENSIONS = ['.jar', '.war']
@@ -1410,12 +1411,22 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     Map bom = new JsonSlurper().parse(rawFile) as Map
 
                     List components = (bom.components ?: []) as List
+                    // The file extension of a component's artifact: its purl's type qualifier (jar when the purl names none),
+                    // the Maven types packaged as a jar giving jar.
+                    final List JAR_TYPES = ['jar', 'bundle', 'ejb', 'ejb-client', 'fatjar', 'maven-plugin', 'test-jar', 'java-source', 'javadoc']
+                    Closure extensionOf = { Map component ->
+                      def qualifier = (component.purl ?: '') =~ /[?&]type=([^&#]+)/
+                      String type = qualifier.find() ? qualifier.group(1) : 'jar'
+                      JAR_TYPES.contains(type) ? 'jar' : type
+                    }
                     Map bySha256 = [:].withDefault { [] }
                     Map byName = [:].withDefault { [] }
                     components.each { component ->
                       component.hashes?.findAll { it.alg == 'SHA-256' }?.each { bySha256[it.content.toLowerCase()].add(component) }
-                      byName[component.name].add(component)
-                      byName[component.name + '-' + component.version].add(component)
+                      // A name only matches a file of the same extension: a jar is never taken for the zip or the war of the same name.
+                      String extension = extensionOf(component)
+                      byName[extension + ':' + component.name].add(component)
+                      byName[extension + ':' + component.name + '-' + component.version].add(component)
                     }
 
                     Map kept = [:]
@@ -1429,10 +1440,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         List hashes = hashesOf { zip.getInputStream(entry) }
                         String sha256 = hashes.find { it.alg == 'SHA-256' }.content
                         String baseName = entry.name.substring(entry.name.lastIndexOf('/') + 1)
+                        String extension = baseName.substring(baseName.lastIndexOf('.') + 1)
                         baseName = baseName.substring(0, baseName.lastIndexOf('.'))
                         List matches = bySha256[sha256].unique(false)
                         if (matches.isEmpty()) {
-                          matches = byName[baseName].unique(false)
+                          matches = byName[extension + ':' + baseName].unique(false)
                           if (matches.size() == 1) {
                             gaps.add('differing file ' + entry.name + ': matched by name to ' + matches[0].purl + ', its SHA-256 differs')
                           }
@@ -1442,7 +1454,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                           component.hashes = hashes
                           kept[component['bom-ref']] = component
                         } else if (matches.isEmpty()) {
-                          gaps.add('unidentified file ' + entry.name + ': no component with its SHA-256 or its name')
+                          gaps.add('unidentified file ' + entry.name + ': no component with its SHA-256, nor with its name and extension')
                         } else {
                           gaps.add('ambiguous file ' + entry.name + ': ' + matches.collect { it.purl })
                         }
