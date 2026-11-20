@@ -1486,7 +1486,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     // It is identified by SHA-256 among the components, nested ones included, of the zip's published SBOM (its json
                     // artifact of classifier cyclonedx) when the zip has one, then among the zip's own entries, and is nested in the
                     // zip's component, which is then kept; its bom-ref is the zip's followed by '!/' and the file's path in the
-                    // delivered zip. The zips with a published SBOM are searched first; zips inside a zip are not opened.
+                    // delivered zip. The published SBOMs of all the zips are searched before their entries; zips inside a zip are not opened.
                     Map artifactFiles = [:]
                     project.artifacts.findAll { !it.classifier && it.file }.each { artifact ->
                       [artifact.version, artifact.baseVersion].each { version ->
@@ -1522,10 +1522,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       }
                     }
                     Closure contentOf = { Map component, File file ->
+                      Map publishedBySha = [:]
                       Map entriesBySha = [:]
                       Map published = publishedSbom(component)
                       if (published != null) {
-                        indexComponents((published.components ?: []) as List, entriesBySha)
+                        indexComponents((published.components ?: []) as List, publishedBySha)
                       }
                       new ZipFile(file).withCloseable { zip ->
                         zip.entries().toList().findAll { entry ->
@@ -1539,7 +1540,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                           }
                         }
                       }
-                      [component: component, published: published != null, bySha: entriesBySha]
+                      [component: component, published: published != null, publishedBySha: publishedBySha, entriesBySha: entriesBySha]
                     }
                     // The Maven coordinates a jar or a war declares in its single META-INF/maven pom.properties, if any.
                     Closure coordinatesOf = { InputStream input ->
@@ -1565,18 +1566,21 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       }.collect { component ->
                         contentOf(component, artifactFiles[component.group + ':' + component.name + ':' + component.version + ':zip'])
                       }
-                      contents = contents.findAll { it.published } + contents.findAll { !it.published }
                     }
                     int nestedCount = 0
                     new ZipFile(zipFile).withCloseable { zip ->
                       unidentified.each { file ->
-                        Map content = contents.find { it.bySha.containsKey(file.sha256) }
+                        Map content = contents.find { it.publishedBySha.containsKey(file.sha256) }
+                        Map found = content?.publishedBySha?.get(file.sha256)
+                        if (content == null) {
+                          content = contents.find { it.entriesBySha.containsKey(file.sha256) }
+                          found = content?.entriesBySha?.get(file.sha256)
+                        }
                         if (content == null) {
                           gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor with its name and extension, nor in the zips of the graph')
                           return
                         }
                         Map zipComponent = content.component
-                        Map found = content.bySha[file.sha256] as Map
                         Map nested
                         if (found.entry == null) {
                           nested = new LinkedHashMap(found)
