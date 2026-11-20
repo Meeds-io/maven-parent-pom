@@ -1365,7 +1365,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     import java.util.zip.ZipFile
 
                     // Reduces the CycloneDX SBOM of the module's whole Maven graph to the files its zip delivers.
-                    // No less-than character in this script: maven-release-plugin's POM rewrite collapses the whitespace that follows one, up to the next greater-than, joining script lines.
+                    // No less-than character in this script: maven-release-plugin's POM rewrite replaces the first run of two or more whitespace characters after one, up to the next greater-than, with one space, which can join script lines.
                     // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version).
                     // FAIL_ON_GAPS: an unidentified, ambiguous or differing delivered file fails the build when true.
                     final boolean FAIL_ON_GAPS = false
