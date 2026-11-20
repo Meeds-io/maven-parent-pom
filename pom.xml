@@ -1365,6 +1365,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     import java.util.zip.ZipFile
 
                     // Reduces the CycloneDX SBOM of the module's whole Maven graph to the files its zip delivers.
+                    // No less-than character in this script: maven-release-plugin's POM rewrite collapses the whitespace that follows one, up to the next greater-than, joining script lines.
                     // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version).
                     // FAIL_ON_GAPS: an unidentified, ambiguous or differing delivered file fails the build when true.
                     final boolean FAIL_ON_GAPS = false
@@ -1380,7 +1381,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       return md.digest().encodeHex().toString()
                     }
 
-                    List hashesOf(Closure<InputStream> opener) {
+                    List hashesOf(Closure opener) {
                       return ['SHA-256', 'SHA-512'].collect { algorithm ->
                         InputStream input = opener()
                         try {
@@ -1412,9 +1413,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     Map bySha256 = [:].withDefault { [] }
                     Map byName = [:].withDefault { [] }
                     components.each { component ->
-                      component.hashes?.findAll { it.alg == 'SHA-256' }?.each { bySha256[it.content.toLowerCase()] << component }
-                      byName[component.name] << component
-                      byName[component.name + '-' + component.version] << component
+                      component.hashes?.findAll { it.alg == 'SHA-256' }?.each { bySha256[it.content.toLowerCase()].add(component) }
+                      byName[component.name].add(component)
+                      byName[component.name + '-' + component.version].add(component)
                     }
 
                     Map kept = [:]
@@ -1433,7 +1434,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         if (matches.isEmpty()) {
                           matches = byName[baseName].unique(false)
                           if (matches.size() == 1) {
-                            gaps << ('differing file ' + entry.name + ': matched by name to ' + matches[0].purl + ', its SHA-256 differs')
+                            gaps.add('differing file ' + entry.name + ': matched by name to ' + matches[0].purl + ', its SHA-256 differs')
                           }
                         }
                         if (matches.size() == 1) {
@@ -1441,9 +1442,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                           component.hashes = hashes
                           kept[component['bom-ref']] = component
                         } else if (matches.isEmpty()) {
-                          gaps << ('unidentified file ' + entry.name + ': no component with its SHA-256 or its name')
+                          gaps.add('unidentified file ' + entry.name + ': no component with its SHA-256 or its name')
                         } else {
-                          gaps << ('ambiguous file ' + entry.name + ': ' + matches.collect { it.purl })
+                          gaps.add('ambiguous file ' + entry.name + ': ' + matches.collect { it.purl })
                         }
                       }
                     }
@@ -1451,7 +1452,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     Map dependsOnByRef = ((bom.dependencies ?: []) as List).collectEntries { [(it.ref): (it.dependsOn ?: [])] }
 
                     // The kept components a node reaches, walking through the removed ones.
-                    Closure<Set> keptReachedFrom = { String ref ->
+                    Closure keptReachedFrom = { String ref ->
                       Set reached = new LinkedHashSet()
                       Set visited = new HashSet()
                       Deque pending = new ArrayDeque(dependsOnByRef[ref] ?: [])
@@ -1461,7 +1462,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                           continue
                         }
                         if (kept.containsKey(next)) {
-                          reached << next
+                          reached.add(next)
                         } else {
                           pending.addAll(dependsOnByRef[next] ?: [])
                         }
@@ -1476,7 +1477,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     // reaches first, then, while some stay unreached, on one whose every unreached ancestor it also reaches
                     // (a component no other one reaches, or the first member of a cycle no component outside it reaches).
                     Map reachCache = [:]
-                    Closure<Set> reachOf = { String ref ->
+                    Closure reachOf = { String ref ->
                       reachCache.computeIfAbsent(ref) {
                         Set reached = new HashSet()
                         Deque pending = new ArrayDeque(keptDependsOn[ref])
@@ -1497,8 +1498,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       String entry = unreached.find { candidate ->
                         unreached.every { other -> !reachOf(other).contains(candidate) || reachOf(candidate).contains(other) }
                       }
-                      rootDependsOn << entry
-                      reachedFromRoot << entry
+                      rootDependsOn.add(entry)
+                      reachedFromRoot.add(entry)
                       reachedFromRoot.addAll(reachOf(entry))
                       unreached.removeAll(reachedFromRoot)
                     }
@@ -1523,7 +1524,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     Set knownRefs = (kept.keySet() + [zipPurl]) as Set
                     bom.dependencies.each { dependency ->
                       ([dependency.ref] + dependency.dependsOn).findAll { !knownRefs.contains(it) }.each {
-                        invalid << ('dependency reference ' + it + ' names no component of the SBOM')
+                        invalid.add('dependency reference ' + it + ' names no component of the SBOM')
                       }
                     }
                     if (!invalid.isEmpty()) {
