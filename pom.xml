@@ -1483,9 +1483,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     }
 
                     // A file no component of the graph identifies may come from a zip of the graph unpacked into the delivered zip.
-                    // It is identified by SHA-256 among the components of the zip's published SBOM (its json artifact of classifier
-                    // cyclonedx) when the zip has one, else among the zip's own entries, and is nested in the zip's component,
-                    // which is then kept. The zips with a published SBOM are searched first; nested zips are not opened.
+                    // It is identified by SHA-256 among the components, nested ones included, of the zip's published SBOM (its json
+                    // artifact of classifier cyclonedx) when the zip has one, then among the zip's own entries, and is nested in the
+                    // zip's component, which is then kept; its bom-ref is the zip's followed by '!/' and the file's path in the
+                    // delivered zip. The zips with a published SBOM are searched first; zips inside a zip are not opened.
                     Map artifactFiles = [:]
                     project.artifacts.findAll { !it.classifier && it.file }.each { artifact ->
                       [artifact.version, artifact.baseVersion].each { version ->
@@ -1496,32 +1497,45 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       def request = new org.eclipse.aether.resolution.ArtifactRequest(
                           new org.eclipse.aether.artifact.DefaultArtifact(component.group, component.name, 'cyclonedx', 'json', component.version),
                           project.remoteProjectRepositories, null)
+                      File file
                       try {
-                        File file = session.container.lookup(org.eclipse.aether.RepositorySystem)
+                        file = session.container.lookup(org.eclipse.aether.RepositorySystem)
                             .resolveArtifact(session.repositorySession, request).artifact.file
-                        new JsonSlurper().parse(file) as Map
                       } catch (org.eclipse.aether.resolution.ArtifactResolutionException ignored) {
-                        null
+                        return null
+                      }
+                      try {
+                        def parsed = new JsonSlurper().parse(file)
+                        if (parsed instanceof Map) {
+                          return parsed
+                        }
+                      } catch (groovy.json.JsonException ignored) {
+                      }
+                      log.warn('SBOM: the published SBOM of ' + component.purl + ' is not a JSON object, its entries are searched instead')
+                      null
+                    }
+                    Closure indexComponents
+                    indexComponents = { List list, Map index ->
+                      list.each { inner ->
+                        inner.hashes?.findAll { it.alg == 'SHA-256' }?.each { index.putIfAbsent(it.content.toLowerCase(), inner) }
+                        indexComponents((inner.components ?: []) as List, index)
                       }
                     }
                     Closure contentOf = { Map component, File file ->
                       Map entriesBySha = [:]
                       Map published = publishedSbom(component)
                       if (published != null) {
-                        ((published.components ?: []) as List).each { inner ->
-                          inner.hashes?.findAll { it.alg == 'SHA-256' }?.each { entriesBySha.putIfAbsent(it.content.toLowerCase(), inner) }
-                        }
-                      } else {
-                        new ZipFile(file).withCloseable { zip ->
-                          zip.entries().toList().findAll { entry ->
-                            !entry.directory && DELIVERED_EXTENSIONS.any { entry.name.endsWith(it) }
-                          }.each { entry ->
-                            InputStream input = zip.getInputStream(entry)
-                            try {
-                              entriesBySha.putIfAbsent(digest('SHA-256', input), [entry: entry.name])
-                            } finally {
-                              input.close()
-                            }
+                        indexComponents((published.components ?: []) as List, entriesBySha)
+                      }
+                      new ZipFile(file).withCloseable { zip ->
+                        zip.entries().toList().findAll { entry ->
+                          !entry.directory && DELIVERED_EXTENSIONS.any { entry.name.endsWith(it) }
+                        }.each { entry ->
+                          InputStream input = zip.getInputStream(entry)
+                          try {
+                            entriesBySha.putIfAbsent(digest('SHA-256', input), [entry: entry.name])
+                          } finally {
+                            input.close()
                           }
                         }
                       }
@@ -1562,9 +1576,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                           return
                         }
                         Map zipComponent = content.component
+                        Map found = content.bySha[file.sha256] as Map
                         Map nested
-                        if (content.published) {
-                          nested = new LinkedHashMap(content.bySha[file.sha256] as Map)
+                        if (found.entry == null) {
+                          nested = new LinkedHashMap(found)
                           nested.remove('components')
                         } else {
                           Properties coordinates = coordinatesOf(zip.getInputStream(zip.getEntry(file.name)))
@@ -1574,6 +1589,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                             nested.version = coordinates.getProperty('version')
                             nested.purl = 'pkg:maven/' + nested.group + '/' + nested.name + '@' + nested.version + (file.extension == 'jar' ? '' : '?type=' + file.extension)
                           }
+                          nested.properties = [[name: 'io.meeds:sbom:zip-entry', value: found.entry]]
                         }
                         nested['bom-ref'] = zipComponent['bom-ref'] + '!/' + file.name
                         nested.hashes = file.hashes
