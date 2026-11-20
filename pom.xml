@@ -1368,7 +1368,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     // No less-than character in this script: maven-release-plugin's POM rewrite replaces the first run of two or more whitespace characters after one, up to the next greater-than, with one space, which can join script lines.
                     // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version) among the components
                     // whose artifact has the file's extension.
-                    // FAIL_ON_GAPS: an unidentified, ambiguous or differing delivered file fails the build when true.
+                    // FAIL_ON_GAPS: an unidentified, ambiguous, differing or duplicate delivered file fails the build when true.
                     final boolean FAIL_ON_GAPS = false
                     final List DELIVERED_EXTENSIONS = ['.jar', '.war']
 
@@ -1431,6 +1431,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
                     Map kept = [:]
                     Map keptFrom = [:]
+                    Map keptSha256 = [:]
                     List gaps = []
                     int deliveredCount = 0
                     List delivered = []
@@ -1452,13 +1453,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     deliveredCount = delivered.size()
 
                     // The files identified by SHA-256 come first, so that a component keeps the hashes of its identical file whatever
-                    // the order of the zip's entries; another file identified as an already kept component is a gap.
+                    // the order of the zip's entries; another file identified as an already kept component is a gap, unless it is an
+                    // identical copy of the kept file.
                     List bySha = delivered.findAll { !bySha256[it.sha256].isEmpty() }
                     List byNameOnly = delivered.findAll { bySha256[it.sha256].isEmpty() }
                     (bySha + byNameOnly).each { file ->
                       boolean matchedByName = bySha256[file.sha256].isEmpty()
                       List matches = matchedByName ? byName[file.extension + ':' + file.baseName].unique(false) : bySha256[file.sha256].unique(false)
                       if (matches.size() == 1 && keptFrom.containsKey(matches[0]['bom-ref'])) {
+                        if (keptSha256[matches[0]['bom-ref']] == file.sha256) {
+                          return
+                        }
                         gaps.add('duplicate file ' + file.name + ': ' + matches[0].purl + ' is already identified as ' + keptFrom[matches[0]['bom-ref']])
                       } else if (matches.size() == 1) {
                         if (matchedByName) {
@@ -1468,6 +1473,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         component.hashes = file.hashes
                         kept[component['bom-ref']] = component
                         keptFrom[component['bom-ref']] = file.name
+                        keptSha256[component['bom-ref']] = file.sha256
                       } else if (matches.isEmpty()) {
                         gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor with its name and extension')
                       } else {
@@ -1561,7 +1567,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         + components.size() + ' components of the Maven graph kept, ' + gaps.size() + ' gap(s), written to ' + outFile)
                     gaps.each { log.warn('SBOM: ' + it) }
                     if (FAIL_ON_GAPS && !gaps.isEmpty()) {
-                      throw new IllegalStateException('SBOM: ' + gaps.size() + ' delivered file(s) not identified, see the warnings above')
+                      throw new IllegalStateException('SBOM: ' + gaps.size() + ' gap(s) in the delivered files, see the warnings above')
                     }
                     ]]></script>
                   </scripts>
