@@ -1367,7 +1367,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     // Reduces the CycloneDX SBOM of the module's whole Maven graph to the files its zip delivers.
                     // No less-than character in this script: maven-release-plugin's POM rewrite replaces the first run of two or more whitespace characters after one, up to the next greater-than, with one space, which can join script lines.
                     // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version) among the components
-                    // whose artifact has the file's extension.
+                    // whose artifact has the file's extension, then by SHA-256 among the contents of the zips of the graph.
                     // FAIL_ON_GAPS: an unidentified, ambiguous, differing or duplicate delivered file fails the build when true.
                     final boolean FAIL_ON_GAPS = false
                     final List DELIVERED_EXTENSIONS = ['.jar', '.war']
@@ -1435,6 +1435,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     List gaps = []
                     int deliveredCount = 0
                     List delivered = []
+                    List unidentified = []
                     new ZipFile(zipFile).withCloseable { zip ->
                       zip.entries().toList().findAll { entry ->
                         !entry.directory && DELIVERED_EXTENSIONS.any { entry.name.endsWith(it) }
@@ -1475,10 +1476,114 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         keptFrom[component['bom-ref']] = file.name
                         keptSha256[component['bom-ref']] = file.sha256
                       } else if (matches.isEmpty()) {
-                        gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor with its name and extension')
+                        unidentified.add(file)
                       } else {
                         gaps.add('ambiguous file ' + file.name + ': ' + matches.collect { it.purl })
                       }
+                    }
+
+                    // A file no component of the graph identifies may come from a zip of the graph unpacked into the delivered zip.
+                    // It is identified by SHA-256 among the components of the zip's published SBOM (its json artifact of classifier
+                    // cyclonedx) when the zip has one, else among the zip's own entries, and is nested in the zip's component,
+                    // which is then kept. The zips with a published SBOM are searched first; nested zips are not opened.
+                    Map artifactFiles = [:]
+                    project.artifacts.findAll { !it.classifier && it.file }.each { artifact ->
+                      [artifact.version, artifact.baseVersion].each { version ->
+                        artifactFiles[artifact.groupId + ':' + artifact.artifactId + ':' + version + ':' + artifact.type] = artifact.file
+                      }
+                    }
+                    Closure publishedSbom = { Map component ->
+                      def request = new org.eclipse.aether.resolution.ArtifactRequest(
+                          new org.eclipse.aether.artifact.DefaultArtifact(component.group, component.name, 'cyclonedx', 'json', component.version),
+                          project.remoteProjectRepositories, null)
+                      try {
+                        File file = session.container.lookup(org.eclipse.aether.RepositorySystem)
+                            .resolveArtifact(session.repositorySession, request).artifact.file
+                        new JsonSlurper().parse(file) as Map
+                      } catch (org.eclipse.aether.resolution.ArtifactResolutionException ignored) {
+                        null
+                      }
+                    }
+                    Closure contentOf = { Map component, File file ->
+                      Map entriesBySha = [:]
+                      Map published = publishedSbom(component)
+                      if (published != null) {
+                        ((published.components ?: []) as List).each { inner ->
+                          inner.hashes?.findAll { it.alg == 'SHA-256' }?.each { entriesBySha.putIfAbsent(it.content.toLowerCase(), inner) }
+                        }
+                      } else {
+                        new ZipFile(file).withCloseable { zip ->
+                          zip.entries().toList().findAll { entry ->
+                            !entry.directory && DELIVERED_EXTENSIONS.any { entry.name.endsWith(it) }
+                          }.each { entry ->
+                            InputStream input = zip.getInputStream(entry)
+                            try {
+                              entriesBySha.putIfAbsent(digest('SHA-256', input), [entry: entry.name])
+                            } finally {
+                              input.close()
+                            }
+                          }
+                        }
+                      }
+                      [component: component, published: published != null, bySha: entriesBySha]
+                    }
+                    // The Maven coordinates a jar or a war declares in its single META-INF/maven pom.properties, if any.
+                    Closure coordinatesOf = { InputStream input ->
+                      List found = []
+                      new java.util.zip.ZipInputStream(input).withCloseable { archive ->
+                        def entry
+                        while ((entry = archive.nextEntry) != null) {
+                          if (entry.name ==~ /META-INF\/maven\/[^\/]+\/[^\/]+\/pom\.properties/) {
+                            Properties properties = new Properties()
+                            properties.load(archive)
+                            found.add(properties)
+                          }
+                        }
+                      }
+                      Properties single = found.size() == 1 ? found[0] : null
+                      ['groupId', 'artifactId', 'version'].every { single?.getProperty(it) } ? single : null
+                    }
+
+                    List contents = []
+                    if (!unidentified.isEmpty()) {
+                      contents = components.findAll { component ->
+                        extensionOf(component) == 'zip' && artifactFiles[component.group + ':' + component.name + ':' + component.version + ':zip']
+                      }.collect { component ->
+                        contentOf(component, artifactFiles[component.group + ':' + component.name + ':' + component.version + ':zip'])
+                      }
+                      contents = contents.findAll { it.published } + contents.findAll { !it.published }
+                    }
+                    int nestedCount = 0
+                    new ZipFile(zipFile).withCloseable { zip ->
+                      unidentified.each { file ->
+                        Map content = contents.find { it.bySha.containsKey(file.sha256) }
+                        if (content == null) {
+                          gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor with its name and extension, nor in the zips of the graph')
+                          return
+                        }
+                        Map zipComponent = content.component
+                        Map nested
+                        if (content.published) {
+                          nested = new LinkedHashMap(content.bySha[file.sha256] as Map)
+                          nested.remove('components')
+                        } else {
+                          Properties coordinates = coordinatesOf(zip.getInputStream(zip.getEntry(file.name)))
+                          nested = [type: 'library', name: coordinates ? coordinates.getProperty('artifactId') : file.baseName]
+                          if (coordinates) {
+                            nested.group = coordinates.getProperty('groupId')
+                            nested.version = coordinates.getProperty('version')
+                            nested.purl = 'pkg:maven/' + nested.group + '/' + nested.name + '@' + nested.version + (file.extension == 'jar' ? '' : '?type=' + file.extension)
+                          }
+                        }
+                        nested['bom-ref'] = zipComponent['bom-ref'] + '!/' + file.name
+                        nested.hashes = file.hashes
+                        zipComponent.components = ((zipComponent.components ?: []) as List) + [nested]
+                        kept[zipComponent['bom-ref']] = zipComponent
+                        nestedCount++
+                      }
+                    }
+                    contents.findAll { !it.published && kept.containsKey(it.component['bom-ref']) }.each {
+                      log.info('SBOM: ' + it.component.purl + ' has no published SBOM, the files it delivers are identified from its entries')
                     }
 
                     Map dependsOnByRef = ((bom.dependencies ?: []) as List).collectEntries { [(it.ref): (it.dependsOn ?: [])] }
@@ -1564,7 +1669,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     }
 
                     log.info('SBOM: ' + zipFile.name + ' delivers ' + deliveredCount + ' files, ' + kept.size() + ' of the '
-                        + components.size() + ' components of the Maven graph kept, ' + gaps.size() + ' gap(s), written to ' + outFile)
+                        + components.size() + ' components of the Maven graph kept, ' + nestedCount + ' files identified inside '
+                        + kept.values().count { it.components } + ' zips of the graph, ' + gaps.size() + ' gap(s), written to ' + outFile)
                     gaps.each { log.warn('SBOM: ' + it) }
                     if (FAIL_ON_GAPS && !gaps.isEmpty()) {
                       throw new IllegalStateException('SBOM: ' + gaps.size() + ' gap(s) in the delivered files, see the warnings above')
