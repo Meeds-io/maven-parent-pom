@@ -1366,8 +1366,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
                     // Reduces the CycloneDX SBOM of the module's whole Maven graph to the files its zip delivers.
                     // No less-than character in this script: maven-release-plugin's POM rewrite replaces the first run of two or more whitespace characters after one, up to the next greater-than, with one space, which can join script lines.
-                    // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version).
-                    // FAIL_ON_GAPS: an unidentified, ambiguous or differing delivered file fails the build when true.
+                    // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version) among the components
+                    // whose artifact has the file's extension.
+                    // FAIL_ON_GAPS: an unidentified, ambiguous, differing or duplicate delivered file fails the build when true.
                     final boolean FAIL_ON_GAPS = false
                     final List DELIVERED_EXTENSIONS = ['.jar', '.war']
 
@@ -1410,42 +1411,73 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     Map bom = new JsonSlurper().parse(rawFile) as Map
 
                     List components = (bom.components ?: []) as List
+                    // The file extension of a component's artifact: its purl's type qualifier (jar when the purl names none),
+                    // the Maven types packaged as a jar giving jar.
+                    final List JAR_TYPES = ['jar', 'bundle', 'ejb', 'ejb-client', 'fatjar', 'maven-plugin', 'test-jar', 'java-source', 'javadoc']
+                    Closure extensionOf = { Map component ->
+                      def qualifier = (component.purl ?: '') =~ /[?&]type=([^&#]+)/
+                      String type = qualifier.find() ? qualifier.group(1) : 'jar'
+                      JAR_TYPES.contains(type) ? 'jar' : type
+                    }
                     Map bySha256 = [:].withDefault { [] }
                     Map byName = [:].withDefault { [] }
                     components.each { component ->
                       component.hashes?.findAll { it.alg == 'SHA-256' }?.each { bySha256[it.content.toLowerCase()].add(component) }
-                      byName[component.name].add(component)
-                      byName[component.name + '-' + component.version].add(component)
+                      // A name only matches a file of the same extension: a jar is never taken for the zip or the war of the same name.
+                      String extension = extensionOf(component)
+                      byName[extension + ':' + component.name].add(component)
+                      byName[extension + ':' + component.name + '-' + component.version].add(component)
                     }
 
                     Map kept = [:]
+                    Map keptFrom = [:]
+                    Map keptSha256 = [:]
                     List gaps = []
                     int deliveredCount = 0
+                    List delivered = []
                     new ZipFile(zipFile).withCloseable { zip ->
                       zip.entries().toList().findAll { entry ->
                         !entry.directory && DELIVERED_EXTENSIONS.any { entry.name.endsWith(it) }
                       }.each { entry ->
-                        deliveredCount++
+                        String fileName = entry.name.substring(entry.name.lastIndexOf('/') + 1)
                         List hashes = hashesOf { zip.getInputStream(entry) }
-                        String sha256 = hashes.find { it.alg == 'SHA-256' }.content
-                        String baseName = entry.name.substring(entry.name.lastIndexOf('/') + 1)
-                        baseName = baseName.substring(0, baseName.lastIndexOf('.'))
-                        List matches = bySha256[sha256].unique(false)
-                        if (matches.isEmpty()) {
-                          matches = byName[baseName].unique(false)
-                          if (matches.size() == 1) {
-                            gaps.add('differing file ' + entry.name + ': matched by name to ' + matches[0].purl + ', its SHA-256 differs')
-                          }
+                        delivered.add([
+                          name     : entry.name,
+                          hashes   : hashes,
+                          sha256   : hashes.find { it.alg == 'SHA-256' }.content,
+                          extension: fileName.substring(fileName.lastIndexOf('.') + 1),
+                          baseName : fileName.substring(0, fileName.lastIndexOf('.')),
+                        ])
+                      }
+                    }
+                    deliveredCount = delivered.size()
+
+                    // The files identified by SHA-256 come first, so that a component keeps the hashes of its identical file whatever
+                    // the order of the zip's entries; another file identified as an already kept component is a gap, unless it is an
+                    // identical copy of the kept file.
+                    List bySha = delivered.findAll { !bySha256[it.sha256].isEmpty() }
+                    List byNameOnly = delivered.findAll { bySha256[it.sha256].isEmpty() }
+                    (bySha + byNameOnly).each { file ->
+                      boolean matchedByName = bySha256[file.sha256].isEmpty()
+                      List matches = matchedByName ? byName[file.extension + ':' + file.baseName].unique(false) : bySha256[file.sha256].unique(false)
+                      if (matches.size() == 1 && keptFrom.containsKey(matches[0]['bom-ref'])) {
+                        if (keptSha256[matches[0]['bom-ref']] == file.sha256) {
+                          return
                         }
-                        if (matches.size() == 1) {
-                          Map component = matches[0] as Map
-                          component.hashes = hashes
-                          kept[component['bom-ref']] = component
-                        } else if (matches.isEmpty()) {
-                          gaps.add('unidentified file ' + entry.name + ': no component with its SHA-256 or its name')
-                        } else {
-                          gaps.add('ambiguous file ' + entry.name + ': ' + matches.collect { it.purl })
+                        gaps.add('duplicate file ' + file.name + ': ' + matches[0].purl + ' is already identified as ' + keptFrom[matches[0]['bom-ref']])
+                      } else if (matches.size() == 1) {
+                        if (matchedByName) {
+                          gaps.add('differing file ' + file.name + ': matched by name to ' + matches[0].purl + ', its SHA-256 differs')
                         }
+                        Map component = matches[0] as Map
+                        component.hashes = file.hashes
+                        kept[component['bom-ref']] = component
+                        keptFrom[component['bom-ref']] = file.name
+                        keptSha256[component['bom-ref']] = file.sha256
+                      } else if (matches.isEmpty()) {
+                        gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor with its name and extension')
+                      } else {
+                        gaps.add('ambiguous file ' + file.name + ': ' + matches.collect { it.purl })
                       }
                     }
 
@@ -1535,7 +1567,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         + components.size() + ' components of the Maven graph kept, ' + gaps.size() + ' gap(s), written to ' + outFile)
                     gaps.each { log.warn('SBOM: ' + it) }
                     if (FAIL_ON_GAPS && !gaps.isEmpty()) {
-                      throw new IllegalStateException('SBOM: ' + gaps.size() + ' delivered file(s) not identified, see the warnings above')
+                      throw new IllegalStateException('SBOM: ' + gaps.size() + ' gap(s) in the delivered files, see the warnings above')
                     }
                     ]]></script>
                   </scripts>
