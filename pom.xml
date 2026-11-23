@@ -1658,7 +1658,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     }
                     int nestedCount = fromZips.size()
                     contents.findAll { !it.published && kept.containsKey(it.component['bom-ref']) }.each {
-                      log.info('SBOM: ' + it.component.purl + ' has no published SBOM, the files it delivers are identified from its entries')
+                      log.info('SBOM: the files ' + it.component.purl + ' delivers are identified from its entries, without a published SBOM')
                     }
 
                     Map dependsOnByRef = ((bom.dependencies ?: []) as List).collectEntries { [(it.ref): (it.dependsOn ?: [])] }
