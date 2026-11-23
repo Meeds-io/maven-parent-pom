@@ -1366,8 +1366,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
                     // Reduces the CycloneDX SBOM of the module's whole Maven graph to the files its zip delivers.
                     // No less-than character in this script: maven-release-plugin's POM rewrite replaces the first run of two or more whitespace characters after one, up to the next greater-than, with one space, which can join script lines.
-                    // A delivered file is identified by SHA-256, then by artifactId (bare or followed by the version) among the components
-                    // whose artifact has the file's extension.
+                    // A delivered file is identified by SHA-256 among the components of the graph, then by SHA-256 among the contents of
+                    // the zips of the graph, then by artifactId (bare or followed by the version) among the components whose artifact
+                    // has the file's extension.
                     // FAIL_ON_GAPS: an unidentified, ambiguous, differing or duplicate delivered file fails the build when true.
                     final boolean FAIL_ON_GAPS = false
                     final List DELIVERED_EXTENSIONS = ['.jar', '.war']
@@ -1452,11 +1453,151 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     }
                     deliveredCount = delivered.size()
 
+                    // A file no component of the graph identifies by SHA-256 may come from a zip of the graph unpacked into the delivered
+                    // zip. It is identified by SHA-256 among the components, nested ones included, of the zip's published SBOM (its json
+                    // artifact of classifier cyclonedx) when the zip has one, then among the zip's own entries, before any match by name:
+                    // the zip's own file is what is delivered, whatever version the graph resolves under the same name. It is nested in
+                    // the zip's component, which is then kept; its bom-ref is the zip's followed by '!/' and the file's path in the
+                    // delivered zip. A file several zips hold goes to the first, in the graph's order, of the zips whose published SBOM
+                    // lists it, else of the zips whose entries hold it; zips inside a zip are not opened.
+                    Map artifactFiles = [:]
+                    project.artifacts.findAll { !it.classifier && it.file }.each { artifact ->
+                      [artifact.version, artifact.baseVersion].each { version ->
+                        artifactFiles[artifact.groupId + ':' + artifact.artifactId + ':' + version + ':' + artifact.type] = artifact.file
+                      }
+                    }
+                    Closure publishedSbom = { Map component ->
+                      def request = new org.eclipse.aether.resolution.ArtifactRequest(
+                          new org.eclipse.aether.artifact.DefaultArtifact(component.group, component.name, 'cyclonedx', 'json', component.version),
+                          project.remoteProjectRepositories, null)
+                      File file
+                      try {
+                        file = session.container.lookup(org.eclipse.aether.RepositorySystem)
+                            .resolveArtifact(session.repositorySession, request).artifact.file
+                      } catch (org.eclipse.aether.resolution.ArtifactResolutionException e) {
+                        // An SBOM the repositories do not hold is the common case; any other failure is worth a warning.
+                        if (!e.results.every { result -> result.exceptions.every { it instanceof org.eclipse.aether.transfer.ArtifactNotFoundException } }) {
+                          log.warn('SBOM: the published SBOM of ' + component.purl + ' could not be resolved (' + e.message + '), its entries are searched instead')
+                        }
+                        return null
+                      }
+                      try {
+                        def parsed = new JsonSlurper().parse(file)
+                        if (parsed instanceof Map) {
+                          return parsed
+                        }
+                      } catch (groovy.json.JsonException ignored) {
+                      }
+                      log.warn('SBOM: the published SBOM of ' + component.purl + ' is not a JSON object, its entries are searched instead')
+                      null
+                    }
+                    Closure indexComponents
+                    indexComponents = { def list, Map index ->
+                      (list instanceof List ? list : []).findAll { it instanceof Map }.each { inner ->
+                        (inner.hashes instanceof List ? inner.hashes : []).findAll {
+                          it instanceof Map && it.alg == 'SHA-256' && it.content instanceof String
+                        }.each {
+                          // A published component needs a type and a name; its copy is checked against the CycloneDX 1.6 schema when nested.
+                          if (inner.type instanceof String && inner.name instanceof String) {
+                            index.putIfAbsent(it.content.toLowerCase(), inner)
+                          }
+                        }
+                        indexComponents(inner.components, index)
+                      }
+                    }
+                    Closure contentOf = { Map component, File file ->
+                      Map publishedBySha = [:]
+                      Map entriesBySha = [:]
+                      Map published = publishedSbom(component)
+                      if (published != null) {
+                        try {
+                          indexComponents(published.components, publishedBySha)
+                        } catch (RuntimeException e) {
+                          log.warn('SBOM: the published SBOM of ' + component.purl + ' cannot be read (' + e + '), its entries are searched instead')
+                          publishedBySha.clear()
+                          published = null
+                        }
+                      }
+                      new ZipFile(file).withCloseable { zip ->
+                        zip.entries().toList().findAll { entry ->
+                          !entry.directory && DELIVERED_EXTENSIONS.any { entry.name.endsWith(it) }
+                        }.each { entry ->
+                          InputStream input = zip.getInputStream(entry)
+                          try {
+                            entriesBySha.putIfAbsent(digest('SHA-256', input), [entry: entry.name])
+                          } finally {
+                            input.close()
+                          }
+                        }
+                      }
+                      [component: component, published: published != null, publishedBySha: publishedBySha, entriesBySha: entriesBySha]
+                    }
+                    // The Maven coordinates a jar or a war declares in its single META-INF/maven pom.properties, if any.
+                    Closure coordinatesOf = { InputStream input ->
+                      List found = []
+                      new java.util.zip.ZipInputStream(input).withCloseable { archive ->
+                        def entry
+                        while ((entry = archive.nextEntry) != null) {
+                          if (entry.name ==~ /META-INF\/maven\/[^\/]+\/[^\/]+\/pom\.properties/) {
+                            Properties properties = new Properties()
+                            properties.load(archive)
+                            found.add(properties)
+                          }
+                        }
+                      }
+                      Properties single = found.size() == 1 ? found[0] : null
+                      ['groupId', 'artifactId', 'version'].every { single?.getProperty(it) } ? single : null
+                    }
+                    // A component identified from the delivered file itself: its Maven coordinates when its pom.properties gives them,
+                    // and the path of its entry in the zip when the zip's entries hold it.
+                    Closure fromDeliveredFile = { ZipFile zip, Map file, Map content ->
+                      Properties coordinates = coordinatesOf(zip.getInputStream(zip.getEntry(file.name)))
+                      Map nested = [type: 'library', name: coordinates ? coordinates.getProperty('artifactId') : file.baseName]
+                      if (coordinates) {
+                        nested.group = coordinates.getProperty('groupId')
+                        nested.version = coordinates.getProperty('version')
+                        nested.purl = 'pkg:maven/' + nested.group + '/' + nested.name + '@' + nested.version + (file.extension == 'jar' ? '' : '?type=' + file.extension)
+                      }
+                      Map entry = content.entriesBySha[file.sha256]
+                      if (entry != null) {
+                        nested.properties = [[name: 'io.meeds:sbom:zip-entry', value: entry.entry]]
+                      }
+                      nested
+                    }
+                    // The fields a component copied from a published SBOM keeps.
+                    final List COPIED_FIELDS = ['type', 'supplier', 'publisher', 'group', 'name', 'version', 'description', 'licenses',
+                                                'copyright', 'cpe', 'purl', 'externalReferences', 'properties']
+
+                    List bySha = delivered.findAll { !bySha256[it.sha256].isEmpty() }
+                    List notBySha = delivered.findAll { bySha256[it.sha256].isEmpty() }
+                    List contents = []
+                    if (!notBySha.isEmpty()) {
+                      contents = components.findAll { component ->
+                        extensionOf(component) == 'zip' && !(component.purl ?: '').contains('classifier=') &&
+                            artifactFiles[component.group + ':' + component.name + ':' + component.version + ':zip']
+                      }.collect { component ->
+                        contentOf(component, artifactFiles[component.group + ':' + component.name + ':' + component.version + ':zip'])
+                      }
+                    }
+                    List fromZips = []
+                    List byNameOnly = []
+                    notBySha.each { file ->
+                      Map content = contents.find { it.publishedBySha.containsKey(file.sha256) }
+                      Map found = content?.publishedBySha?.get(file.sha256)
+                      if (content == null) {
+                        content = contents.find { it.entriesBySha.containsKey(file.sha256) }
+                        found = content?.entriesBySha?.get(file.sha256)
+                      }
+                      if (content == null) {
+                        byNameOnly.add(file)
+                      } else {
+                        fromZips.add([file: file, content: content, found: found])
+                      }
+                    }
+
                     // The files identified by SHA-256 come first, so that a component keeps the hashes of its identical file whatever
                     // the order of the zip's entries; another file identified as an already kept component is a gap, unless it is an
                     // identical copy of the kept file.
-                    List bySha = delivered.findAll { !bySha256[it.sha256].isEmpty() }
-                    List byNameOnly = delivered.findAll { bySha256[it.sha256].isEmpty() }
                     (bySha + byNameOnly).each { file ->
                       boolean matchedByName = bySha256[file.sha256].isEmpty()
                       List matches = matchedByName ? byName[file.extension + ':' + file.baseName].unique(false) : bySha256[file.sha256].unique(false)
@@ -1475,10 +1616,49 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         keptFrom[component['bom-ref']] = file.name
                         keptSha256[component['bom-ref']] = file.sha256
                       } else if (matches.isEmpty()) {
-                        gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor with its name and extension')
+                        gaps.add('unidentified file ' + file.name + ': no component with its SHA-256, nor in the zips of the graph, nor with its name and extension')
                       } else {
                         gaps.add('ambiguous file ' + file.name + ': ' + matches.collect { it.purl })
                       }
+                    }
+
+                    new ZipFile(zipFile).withCloseable { zip ->
+                      fromZips.each { match ->
+                        Map file = match.file
+                        Map found = match.found
+                        Map zipComponent = match.content.component
+                        String nestedRef = zipComponent['bom-ref'] + '!/' + file.name
+                        Map nested
+                        if (found.entry == null) {
+                          nested = found.findAll { COPIED_FIELDS.contains(it.key) }
+                          if (nested.properties instanceof List) {
+                            nested.properties = nested.properties.findAll { it instanceof Map && it.name != 'io.meeds:sbom:zip-entry' }
+                          }
+                          if (!nested.properties) {
+                            nested.remove('properties')
+                          }
+                          nested['bom-ref'] = nestedRef
+                          nested.hashes = file.hashes
+                          // A copy the CycloneDX 1.6 schema refuses is replaced by the identification from the delivered file.
+                          Map single = [bomFormat: 'CycloneDX', specVersion: '1.6', version: 1, components: [nested]]
+                          List refused = new org.cyclonedx.parsers.JsonParser().validate(JsonOutput.toJson(single), org.cyclonedx.Version.VERSION_16)*.message
+                          if (!refused.isEmpty()) {
+                            log.warn('SBOM: the component of ' + file.name + ' in the published SBOM of ' + zipComponent.purl
+                                + ' is not valid CycloneDX 1.6 (' + refused.join('; ') + '), it is identified from the delivered file instead')
+                            nested = fromDeliveredFile(zip, file, match.content)
+                          }
+                        } else {
+                          nested = fromDeliveredFile(zip, file, match.content)
+                        }
+                        nested['bom-ref'] = nestedRef
+                        nested.hashes = file.hashes
+                        zipComponent.components = ((zipComponent.components ?: []) as List) + [nested]
+                        kept[zipComponent['bom-ref']] = zipComponent
+                      }
+                    }
+                    int nestedCount = fromZips.size()
+                    contents.findAll { !it.published && kept.containsKey(it.component['bom-ref']) }.each {
+                      log.info('SBOM: the files ' + it.component.purl + ' delivers are identified from its entries, without a published SBOM')
                     }
 
                     Map dependsOnByRef = ((bom.dependencies ?: []) as List).collectEntries { [(it.ref): (it.dependsOn ?: [])] }
@@ -1564,7 +1744,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                     }
 
                     log.info('SBOM: ' + zipFile.name + ' delivers ' + deliveredCount + ' files, ' + kept.size() + ' of the '
-                        + components.size() + ' components of the Maven graph kept, ' + gaps.size() + ' gap(s), written to ' + outFile)
+                        + components.size() + ' components of the Maven graph kept, ' + nestedCount + ' files identified inside '
+                        + kept.values().count { it.components } + ' zips of the graph, ' + gaps.size() + ' gap(s), written to ' + outFile)
                     gaps.each { log.warn('SBOM: ' + it) }
                     if (FAIL_ON_GAPS && !gaps.isEmpty()) {
                       throw new IllegalStateException('SBOM: ' + gaps.size() + ' gap(s) in the delivered files, see the warnings above')
