@@ -1474,7 +1474,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       try {
                         file = session.container.lookup(org.eclipse.aether.RepositorySystem)
                             .resolveArtifact(session.repositorySession, request).artifact.file
-                      } catch (org.eclipse.aether.resolution.ArtifactResolutionException ignored) {
+                      } catch (org.eclipse.aether.resolution.ArtifactResolutionException e) {
+                        // An SBOM the repositories do not hold is the common case; any other failure is worth a warning.
+                        if (!e.results.every { result -> result.exceptions.every { it instanceof org.eclipse.aether.transfer.ArtifactNotFoundException } }) {
+                          log.warn('SBOM: the published SBOM of ' + component.purl + ' could not be resolved (' + e.message + '), its entries are searched instead')
+                        }
                         return null
                       }
                       try {
@@ -1493,7 +1497,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         (inner.hashes instanceof List ? inner.hashes : []).findAll {
                           it instanceof Map && it.alg == 'SHA-256' && it.content instanceof String
                         }.each {
-                          // A published component is taken only with the fields CycloneDX 1.6 requires, else the zip's entries identify the file.
+                          // A published component needs a type and a name; its copy is checked against the CycloneDX 1.6 schema when nested.
                           if (inner.type instanceof String && inner.name instanceof String) {
                             index.putIfAbsent(it.content.toLowerCase(), inner)
                           }
@@ -1543,6 +1547,22 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                       }
                       Properties single = found.size() == 1 ? found[0] : null
                       ['groupId', 'artifactId', 'version'].every { single?.getProperty(it) } ? single : null
+                    }
+                    // A component identified from the delivered file itself: its Maven coordinates when its pom.properties gives them,
+                    // and the path of its entry in the zip when the zip's entries hold it.
+                    Closure fromDeliveredFile = { ZipFile zip, Map file, Map content ->
+                      Properties coordinates = coordinatesOf(zip.getInputStream(zip.getEntry(file.name)))
+                      Map nested = [type: 'library', name: coordinates ? coordinates.getProperty('artifactId') : file.baseName]
+                      if (coordinates) {
+                        nested.group = coordinates.getProperty('groupId')
+                        nested.version = coordinates.getProperty('version')
+                        nested.purl = 'pkg:maven/' + nested.group + '/' + nested.name + '@' + nested.version + (file.extension == 'jar' ? '' : '?type=' + file.extension)
+                      }
+                      Map entry = content.entriesBySha[file.sha256]
+                      if (entry != null) {
+                        nested.properties = [[name: 'io.meeds:sbom:zip-entry', value: entry.entry]]
+                      }
+                      nested
                     }
                     // The fields a component copied from a published SBOM keeps.
                     final List COPIED_FIELDS = ['type', 'supplier', 'publisher', 'group', 'name', 'version', 'description', 'licenses',
@@ -1607,6 +1627,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                         Map file = match.file
                         Map found = match.found
                         Map zipComponent = match.content.component
+                        String nestedRef = zipComponent['bom-ref'] + '!/' + file.name
                         Map nested
                         if (found.entry == null) {
                           nested = found.findAll { COPIED_FIELDS.contains(it.key) }
@@ -1616,17 +1637,20 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                           if (!nested.properties) {
                             nested.remove('properties')
                           }
-                        } else {
-                          Properties coordinates = coordinatesOf(zip.getInputStream(zip.getEntry(file.name)))
-                          nested = [type: 'library', name: coordinates ? coordinates.getProperty('artifactId') : file.baseName]
-                          if (coordinates) {
-                            nested.group = coordinates.getProperty('groupId')
-                            nested.version = coordinates.getProperty('version')
-                            nested.purl = 'pkg:maven/' + nested.group + '/' + nested.name + '@' + nested.version + (file.extension == 'jar' ? '' : '?type=' + file.extension)
+                          nested['bom-ref'] = nestedRef
+                          nested.hashes = file.hashes
+                          // A copy the CycloneDX 1.6 schema refuses is replaced by the identification from the delivered file.
+                          Map single = [bomFormat: 'CycloneDX', specVersion: '1.6', version: 1, components: [nested]]
+                          List refused = new org.cyclonedx.parsers.JsonParser().validate(JsonOutput.toJson(single), org.cyclonedx.Version.VERSION_16)*.message
+                          if (!refused.isEmpty()) {
+                            log.warn('SBOM: the component of ' + file.name + ' in the published SBOM of ' + zipComponent.purl
+                                + ' is not valid CycloneDX 1.6 (' + refused.join('; ') + '), it is identified from the delivered file instead')
+                            nested = fromDeliveredFile(zip, file, match.content)
                           }
-                          nested.properties = [[name: 'io.meeds:sbom:zip-entry', value: found.entry]]
+                        } else {
+                          nested = fromDeliveredFile(zip, file, match.content)
                         }
-                        nested['bom-ref'] = zipComponent['bom-ref'] + '!/' + file.name
+                        nested['bom-ref'] = nestedRef
                         nested.hashes = file.hashes
                         zipComponent.components = ((zipComponent.components ?: []) as List) + [nested]
                         kept[zipComponent['bom-ref']] = zipComponent
